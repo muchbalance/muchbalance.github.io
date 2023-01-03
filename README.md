@@ -1,4 +1,5 @@
 A simple & fast web app to check your DOGE balance. Dogecoin MuchBalance or Dogecoin Much Balance is a faster alternative to DogeChain and other blockchain explorers, although we are not their competitors.
+
 A simple & fast web app to check your BITCOIN balance. Bitcoin MuchBalance or Bitcoin Much Balance is a faster alternative to Blockchain.com and other blockchain explorers, although we are not their competitors.
 
 Use :
