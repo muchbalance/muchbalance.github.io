@@ -32,18 +32,28 @@ $(document).ready(function() {
                   $('#price').html('$' + PP(price.data.prices[0].price));
   });
   });
-               
-           $('#add').on('keyup', function() {
-            function thousands_separators(num)
+
+  function thousands_separators(num)
   {
     var num_parts = num.toString().split(".");
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return num_parts.join(".");
   }
   function wot(ae) {
-    fnum = parseFloat(ae).toFixed(6);
+    fnum = parseFloat(ae).toFixed(2);
     return fnum;
   }
+  $.getJSON('https://api.blockchair.com/bitcoin/stats?key=G___sPoHdNzm0gwvPJuhbmZ3JsAxqBcm', function(data) {
+                  $.transactions_24h = thousands_separators(data.data.transactions_24h);
+                    $('#transactions').html("<i class='fa fa-bar-chart'></i> Txs(24h): " + $.transactions_24h);
+  });
+  $.getJSON('https://chain.so/api/v2/get_info/BTC', function(data) {
+                  $.blocks = thousands_separators(data.data.blocks);
+                    $('#blocks').html("<i class='fa fa-cubes'></i> Blocks: " + $.blocks);
+  });
+               
+
+           $('#add').on('keyup', function() {
   function wotpp(ae) {
     fnum = parseFloat(ae).toFixed(2);
     return fnum;

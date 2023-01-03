@@ -74,13 +74,16 @@
 </div>
 
 <div>
+  <!-- Header Start -->
 <header style="background: #2c3e50;">
   
   <div>
   <img src="bitcoin.png" alt="Bitcoin Logo" height="50" width="50" style="margin-left: 3%;" />
   <p style="float: right;margin-right: 3%;color: white;">Price: <strong><span id="price" style="color: white;"></span></strong> &nbsp;<i class="fa fa-refresh" style="cursor: pointer;" id="refp"></i></p>
 </div>
+
 <br/>
+
 <center>
 <form action="javascript:void(0);">
   <div class="fieldset">
@@ -89,9 +92,15 @@
     <a href="#" class="clear-text material-icons">cancel</a>
   </div>
 </form>
-<br/><br/>
+
+<!-- Blocks & Transactions -->
+  <strong><span class="BTbtn" id="blocks" style="cursor: initial;"></span></strong>
+  <strong><span class="BTbtn" id="transactions" style="cursor: initial;"></span></strong>
 </center>
+
 </header>
+<!-- Header End -->
+
 <div id="tools">
   <span class="ncls" onclick="document.getElementById('tools').style.display='none';">&times;</span>
 <br/><br/><br/>
@@ -163,7 +172,7 @@ function outCPFunc() {
       <div id="mmchdr"><h1 style="font-size:19px;">Use, Credits & About</h1></div>
       
       <div id="uses">
-        <p style="color:rgb(37,80,250);"><strong>A simple & fast web app to check your BITCOIN balance. Bitcoin MuchBalance or Bitcoin Much Balance is a faster alternative to Blockchain.com and other blockchain explorers, although we are not their competitors.</strong></p>   
+        <p><strong>A simple & fast web app to check your BITCOIN balance. Bitcoin MuchBalance or Bitcoin Much Balance is a faster alternative to Blockchain.com and other blockchain explorers, although we are not their competitors.</strong></p>   
           
         <p><span style="color: rgb(255,69,94);"><b>Note</b></span> - Use only BITCOIN network to withdraw your bitcoins from exchanges to your wallet. If you will use any other network(not bitcoin network), those bitcoins will no longer remain real. So please ensure before withdrawing, that you are withdrawing your coins through bitcoins network(This may charge you little bit more fees compared to any other network, but this will keep your bitcoins real).</p>
         
