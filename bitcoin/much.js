@@ -43,7 +43,7 @@ $(document).ready(function() {
     fnum = parseFloat(ae).toFixed(2);
     return fnum;
   }
-  $.getJSON('https://api.blockchair.com/bitcoin/stats?key=G___sPoHdNzm0gwvPJuhbmZ3JsAxqBcm', function(data) {
+  $.getJSON('https://api.blockchair.com/bitcoin/stats', function(data) {
                   $.transactions_24h = thousands_separators(data.data.transactions_24h);
                     $('#transactions').html("<i class='fa fa-bar-chart'></i> Txs(24h): " + $.transactions_24h);
   });
