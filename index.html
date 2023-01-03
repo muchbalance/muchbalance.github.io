@@ -99,13 +99,16 @@
 </div>
 
 <div>
+<!-- Header Start -->
 <header>
   
   <div>
   <img src="dogecoin-300.png" alt="Dogecoin Logo" height="50" width="50" style="margin-left: 3%;" />
-  <p style="float: right;margin-right: 3%;color: white;">Price: <strong><span id="price" style="color: white;"></span></strong> &nbsp;<i class="fa fa-refresh" style="cursor: pointer;" id="refp"></i></p>
+  <p style="float: right;margin-right: 3%;color: white;font-size: 15px;">Price: <strong><span id="price" style="color: white;"></span></strong> &nbsp;<i class="fa fa-refresh" style="cursor: pointer;" id="refp"></i></p>
 </div>
+
 <br/>
+
 <center>
 <form action="javascript:void(0);">
   <div class="fieldset">
@@ -114,9 +117,15 @@
     <a href="#" class="clear-text material-icons">cancel</a>
   </div>
 </form>
-<br/><br/>
+
+<!-- Blocks & Transactions -->
+  <strong><span class="BTbtn" id="blocks" style="cursor: initial;"></span></strong>
+  <strong><span class="BTbtn" id="transactions" style="cursor: initial;"></span></strong>
 </center>
+
 </header>
+<!-- Header End -->
+
 <div id="tools">
   <span class="ncls" onclick="document.getElementById('tools').style.display='none';">&times;</span>
 <br/><br/><br/>
@@ -145,7 +154,17 @@
 </div>
 <div id="rslt">
 <br/>
-<center><button class="tBtn" onclick="document.getElementById('tools').style.display = 'block';">Tools &nbsp;<i class="fa fa-cog" aria-hidden="true"></i> </button> <button class="tBtn" onclick="window.location.href='bitcoin/index.html';"><div style="margin:0;padding:0;display: flex;justify-content: center;align-items: center;"><img src="bitcoin/bitcoin.png" height="10" width="10" align="top">&nbsp;Explorer </div></button> <div id="qttp"><button class="tBtn">Help <i class="fa fa-question-circle"></i></button><span class="ttptxt" style="margin-left: -150px;width: 220px;">If you have pasted dogecoin address in input field and data is not showing then please click on input field and press CAPS LOCK button on your keyboard, actually it shows data on any keyup if address is valid and paste button is not a key of keyboard.</span></div> <button class="tBtn" id="thmBtn"> <i class="fa fa-toggle-on"></i></button> </center>
+
+<!-- Buttons -->
+<center>
+  <button class="tBtn" onclick="document.getElementById('tools').style.display = 'block';">Tools &nbsp;<i class="fa fa-cog" aria-hidden="true"></i> </button>
+  <button class="tBtn" onclick="window.location.href='bitcoin/index.html';"><div style="margin:0;padding:0;display: flex;justify-content: center;align-items: center;"><img src="bitcoin/bitcoin.png" height="10" width="10" align="top">&nbsp;Explorer </div>
+  </button>
+  <div id="qttp"><button class="tBtn">Help <i class="fa fa-question-circle"></i></button><span class="ttptxt" style="margin-left: -150px;width: 220px;">If you have pasted dogecoin address in input field and data is not showing then please click on input field and press CAPS LOCK button on your keyboard, actually it shows data on any keyup if address is valid and paste button is not a key of keyboard.</span></div>
+  <button class="tBtn" id="thmBtn"> <i class="fa fa-toggle-on"></i></button>
+</center>
+
+<!-- Address Data -->
 <div id="oneb">
   
 </div>
@@ -187,7 +206,7 @@ function outCPFunc() {
       <div id="mmchdr"><h1 style="font-size:19px;">Use, Credits & About</h1></div>
       
       <div id="uses">
-        <p style="color:rgb(37,80,250);"><strong>A simple & fast web app to check your DOGE balance. Dogecoin MuchBalance or Dogecoin Much Balance is a faster alternative to DogeChain and other blockchain explorers, although we are not their competitors.</strong></p>  
+        <p><strong>A simple & fast web app to check your DOGE balance. Dogecoin MuchBalance or Dogecoin Much Balance is a faster alternative to DogeChain and other blockchain explorers, although we are not their competitors.</strong></p>  
           
         <p><span style="color:rgb(255,69,94);"><b>Note</b></span> - Use only DOGECOIN network to withdraw your dogecoins from exchanges to your wallet. If you will use any other network(not dogecoin network), those dogecoins will no longer remain real. So please ensure before withdrawing, that you are withdrawing your coins through dogecoin network(This may charge you little bit more fees compared to any other network, but this will keep your dogecoins real).</p>
         

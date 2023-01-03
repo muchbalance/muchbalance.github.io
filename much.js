@@ -47,9 +47,7 @@ $(document).ready(function() {
                   $('#price').html('$' + price.data.prices[0].price);
   });
   });
-               
-           $('#add').on('keyup', function() {
-            function thousands_separators(num)
+function thousands_separators(num)
   {
     var num_parts = num.toString().split(".");
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -59,6 +57,16 @@ $(document).ready(function() {
     fnum = parseFloat(ae).toFixed(2);
     return fnum;
   }
+  $.getJSON('https://api.blockchair.com/dogecoin/stats?key=G___sPoHdNzm0gwvPJuhbmZ3JsAxqBcm', function(data) {
+                  $.transactions_24h = thousands_separators(data.data.transactions_24h);
+                    $('#transactions').html("<i class='fa fa-bar-chart'></i> Txs(24h): " + $.transactions_24h);
+  });
+  $.getJSON('https://chain.so/api/v2/get_info/DOGE', function(data) {
+                  $.blocks = thousands_separators(data.data.blocks);
+                    $('#blocks').html("<i class='fa fa-cubes'></i> Blocks: " + $.blocks);
+  });
+               
+           $('#add').on('keyup', function() {
 
                $.getJSON('https://chain.so/api/v2/get_address_balance/DOGE/' + $('#add').val(), function(data) {
                 $.blnc = data.data.confirmed_balance;

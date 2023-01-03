@@ -8,6 +8,10 @@ body.lightTheme {
 	background: rgb(231,235,236);
 	color: #000;
 }
+.lightTheme .BTbtn {
+	background: #fff;
+	color: #000;
+}
 .lightTheme #add {
 	background: #fff;
 	color: black;
