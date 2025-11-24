@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Bitcoin Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js for small sparklines if needed, or simple SVGs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        btc: '#F7931A',
+                        dark: '#0f172a',
+                        glass: {
+                            light: 'rgba(255, 255, 255, 0.65)',
+                            dark: 'rgba(15, 23, 42, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.2)',
+                            borderDark: 'rgba(255, 255, 255, 0.05)',
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f0f9ff;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark body {
+            background-color: #020617;
+        }
+
+        /* Ambient Background Blobs */
+        .ambient-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: blob 10s infinite alternate;
+        }
+
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #F7931A; animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 500px; height: 500px; background: #3b82f6; animation-delay: 2s; }
+        .blob-3 { top: 40%; left: 40%; width: 400px; height: 400px; background: #a855f7; animation-delay: 4s; }
+
+        .dark .blob { opacity: 0.3; }
+
+        /* Glassmorphism Cards */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.8);
+        }
+
+        /* Utility */
+        .text-gradient {
+            background: linear-gradient(135deg, #F7931A, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .loader {
+            border: 3px solid rgba(247, 147, 26, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #F7931A;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen">
+
+    <!-- Ambient Background -->
+    <div class="ambient-light">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-panel mt-4 rounded-2xl px-6 py-3 flex justify-between items-center">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="app.showHome()">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
+                        <i data-lucide="bitcoin" class="text-white w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight hidden sm:block">Bit<span class="text-btc">Glass</span></span>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-lg mx-4">
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="search" class="text-slate-400 w-5 h-5"></i>
+                        </div>
+                        <input type="text" id="searchInput" 
+                            class="block w-full pl-10 pr-3 py-2.5 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-btc focus:border-transparent transition duration-150 ease-in-out sm:text-sm backdrop-blur-sm"
+                            placeholder="Search Address, TxID, or Block Hash..."
+                            onkeypress="if(event.key === 'Enter') app.handleSearch()">
+                        <button onclick="app.handleSearch()" class="absolute right-2 top-1.5 p-1 bg-btc/10 hover:bg-btc/20 rounded-lg text-btc transition-colors">
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button onclick="app.toggleTheme()" class="p-2 rounded-xl hover:bg-white/20 dark:hover:bg-slate-800/50 transition-colors">
+                    <i data-lucide="sun" class="w-5 h-5 dark:hidden text-orange-500"></i>
+                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-slate-200"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto min-h-screen relative z-10">
+        
+        <!-- Error Toast -->
+        <div id="errorToast" class="fixed top-24 right-5 bg-red-500/90 text-white px-6 py-3 rounded-xl shadow-xl transform translate-x-full transition-transform duration-300 backdrop-blur-md z-50 flex items-center gap-3">
+            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+            <span id="errorMsg">Error message here</span>
+        </div>
+
+        <!-- VIEWS -->
+        
+        <!-- 1. HOME VIEW -->
+        <div id="view-home" class="space-y-8 animate-fade-in">
+            <!-- Hero Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Price Card -->
+                <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Bitcoin Price</p>
+                            <h2 class="text-3xl font-bold mt-1" id="btcPriceUSD">$0.00</h2>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1" id="btcPriceINR">₹0.00</p>
+                        </div>
+                        <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-2xl">
+                            <i data-lucide="dollar-sign" class="w-6 h-6 text-orange-600 dark:text-orange-400"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="priceChange" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                            +0.00%
+                        </span>
+                        <span class="text-xs text-slate-500">24h Change</span>
+                    </div>
+                </div>
+
+                <!-- Market Cap -->
+                <div class="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Market Cap</p>
+                            <h2 class="text-3xl font-bold mt-1" id="marketCap">$0.00</h2>
+                        </div>
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
+                            <i data-lucide="pie-chart" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500">Global Crypto Dominance</p>
+                </div>
+
+                <!-- Latest Block -->
+                <div class="glass-panel rounded-3xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -mr-16 -mt-16"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Latest Block</p>
+                            <h2 class="text-3xl font-bold mt-1 font-mono" id="latestBlockHeight">...</h2>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-2xl animate-pulse">
+                            <i data-lucide="box" class="w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500">Mined just now</p>
+                </div>
+            </div>
+
+            <!-- Recent Blocks Table -->
+            <div class="glass-panel rounded-3xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold flex items-center gap-2">
+                        <i data-lucide="layers" class="text-btc"></i> Latest Blocks
+                    </h3>
+                    <button onclick="app.fetchRecentBlocks()" class="text-sm text-btc hover:text-orange-600 font-medium">Refresh</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs font-semibold tracking-wide text-slate-500 uppercase border-b border-slate-200 dark:border-slate-700">
+                                <th class="px-4 py-3">Height</th>
+                                <th class="px-4 py-3">Hash</th>
+                                <th class="px-4 py-3">Time</th>
+                                <th class="px-4 py-3 text-right">Transactions</th>
+                                <th class="px-4 py-3 text-right">Size (KB)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blocksTableBody" class="text-sm divide-y divide-slate-200 dark:divide-slate-700">
+                            <!-- Populated by JS -->
+                            <tr><td colspan="5" class="text-center py-4">Loading blockchain data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ADDRESS VIEW -->
+        <div id="view-address" class="hidden space-y-8 animate-fade-in">
+            <!-- Back Button -->
+            <button onclick="app.showHome()" class="flex items-center gap-2 text-slate-500 hover:text-btc transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+            </button>
+
+            <!-- Address Header Card -->
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
+                <div class="bg-white p-4 rounded-xl shadow-lg shrink-0">
+                    <div id="addressQrCode"></div>
+                </div>
+                <div class="flex-1 w-full overflow-hidden">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-btc/20 text-orange-700 dark:text-orange-300">Bitcoin Address</span>
+                        <button onclick="app.copyToClipboard('addressHash')" class="p-1 hover:bg-black/10 rounded-full transition"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                    </div>
+                    <h1 id="addressHash" class="text-xl sm:text-2xl md:text-3xl font-mono font-bold break-all mb-6 text-transparent bg-clip-text bg-gradient-to-r from-slate-800 to-slate-500 dark:from-white dark:to-slate-400">
+                        Loading...
+                    </h1>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                            <p class="text-xs text-slate-500 mb-1">Final Balance</p>
+                            <p id="addrBalance" class="text-lg font-bold text-btc">0 BTC</p>
+                            <p id="addrBalanceFiat" class="text-xs text-slate-400">$0.00</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                            <p class="text-xs text-slate-500 mb-1">Total Received</p>
+                            <p id="addrReceived" class="text-lg font-bold text-green-600 dark:text-green-400">0 BTC</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                            <p class="text-xs text-slate-500 mb-1">Total Sent</p>
+                            <p id="addrSent" class="text-lg font-bold text-red-600 dark:text-red-400">0 BTC</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                            <p class="text-xs text-slate-500 mb-1">Tx Count</p>
+                            <p id="addrTxCount" class="text-lg font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Transactions -->
+            <div class="glass-panel rounded-3xl p-6 sm:p-8">
+                <h3 class="text-xl font-bold mb-6">Transactions</h3>
+                <div id="addressTxList" class="space-y-4">
+                    <!-- Tx Cards injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. TRANSACTION VIEW -->
+        <div id="view-tx" class="hidden space-y-8 animate-fade-in">
+            <button onclick="app.showHome()" class="flex items-center gap-2 text-slate-500 hover:text-btc transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+            </button>
+
+            <div class="glass-panel rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col gap-2 mb-6">
+                    <span class="text-sm font-medium text-slate-500">Transaction ID</span>
+                    <h1 id="txHash" class="text-xl sm:text-2xl font-mono font-bold break-all text-slate-800 dark:text-slate-200">
+                        ...
+                    </h1>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40">
+                        <p class="text-sm text-slate-500">Status</p>
+                        <div id="txStatus" class="mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            Unconfirmed
+                        </div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40">
+                        <p class="text-sm text-slate-500">Total Transacted</p>
+                        <p id="txTotal" class="text-lg font-bold text-btc">0 BTC</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40">
+                        <p class="text-sm text-slate-500">Fee</p>
+                        <p id="txFee" class="text-lg font-bold">0 Sats</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40">
+                        <p class="text-sm text-slate-500">Confirmations</p>
+                        <p id="txConfirmations" class="text-lg font-bold">0</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/40 dark:bg-slate-800/40">
+                        <p class="text-sm text-slate-500">Block Height</p>
+                        <a id="txBlockHeight" href="#" class="text-lg font-bold text-blue-500 hover:underline">---</a>
+                    </div>
+                </div>
+
+                <!-- Inputs/Outputs Visualization -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
+                    <!-- Arrow connector for desktop -->
+                    <div class="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 dark:bg-slate-700 rounded-full p-2 z-10">
+                        <i data-lucide="arrow-right" class="w-6 h-6 text-slate-500"></i>
+                    </div>
+
+                    <!-- Inputs -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-500 uppercase text-xs tracking-wider">Inputs</h4>
+                        <div id="txInputs" class="space-y-3"></div>
+                    </div>
+                    <!-- Outputs -->
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-slate-500 uppercase text-xs tracking-wider text-right lg:text-left">Outputs</h4>
+                        <div id="txOutputs" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. BLOCK VIEW -->
+        <div id="view-block" class="hidden space-y-8 animate-fade-in">
+             <button onclick="app.showHome()" class="flex items-center gap-2 text-slate-500 hover:text-btc transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+            </button>
+
+            <div class="glass-panel rounded-3xl p-6 sm:p-8">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="p-4 bg-purple-100 dark:bg-purple-900/30 rounded-2xl">
+                        <i data-lucide="box" class="w-8 h-8 text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-medium text-slate-500">Block Height</span>
+                        <h1 id="blockHeightDisplay" class="text-3xl font-bold font-mono">0</h1>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-2">
+                        <span class="text-sm text-slate-500 block">Hash</span>
+                        <span id="blockHashDisplay" class="font-mono text-sm break-all">...</span>
+                    </div>
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-2">
+                         <span class="text-sm text-slate-500 block">Timestamp</span>
+                        <span id="blockTimeDisplay" class="font-mono text-sm">...</span>
+                    </div>
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-2">
+                         <span class="text-sm text-slate-500 block">Transaction Count</span>
+                        <span id="blockTxCountDisplay" class="font-mono text-sm">0</span>
+                    </div>
+                    <div class="border-b border-slate-200 dark:border-slate-700 pb-2">
+                         <span class="text-sm text-slate-500 block">Size</span>
+                        <span id="blockSizeDisplay" class="font-mono text-sm">0 KB</span>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h4 class="font-bold mb-4">Block Transactions (First 10)</h4>
+                    <div id="blockTxList" class="space-y-2">
+                        <!-- List -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-8 text-center text-slate-500 text-sm relative z-10">
+        <div class="glass-panel inline-block px-6 py-2 rounded-full">
+            Built by <strong>Gemini</strong> for Naveen Soni &bull; Powered by CoinGecko & Blockstream
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * BITCOIN EXPLORER APPLICATION LOGIC
+         */
+        const app = {
+            state: {
+                btcPrice: 0,
+                btcPriceINR: 0,
+                currentView: 'home',
+                loading: false
+            },
+
+            // Constants
+            API_PRICE: 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,inr&include_24hr_change=true&include_market_cap=true',
+            API_BLOCKCHAIN: 'https://blockstream.info/api', // Mainnet
+
+            init: async () => {
+                lucide.createIcons();
+                app.setThemeFromSystem();
+                
+                // Initial Data Fetch
+                await app.fetchPrice();
+                await app.fetchRecentBlocks();
+                
+                // Refresh Price every 60s
+                setInterval(app.fetchPrice, 60000);
+            },
+
+            /**
+             * THEME MANAGEMENT
+             */
+            toggleTheme: () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            },
+            
+            setThemeFromSystem: () => {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            },
+
+            /**
+             * NAVIGATION & UI
+             */
+            showView: (viewId) => {
+                ['view-home', 'view-address', 'view-tx', 'view-block'].forEach(id => {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                document.getElementById(viewId).classList.remove('hidden');
+                app.state.currentView = viewId;
+                window.scrollTo(0,0);
+            },
+
+            showHome: () => {
+                app.showView('view-home');
+                app.fetchRecentBlocks(); // Refresh blocks on home return
+            },
+
+            showError: (msg) => {
+                const toast = document.getElementById('errorToast');
+                document.getElementById('errorMsg').innerText = msg;
+                toast.classList.remove('translate-x-full');
+                setTimeout(() => toast.classList.add('translate-x-full'), 3000);
+            },
+
+            copyToClipboard: (elementId) => {
+                const text = document.getElementById(elementId).innerText;
+                document.execCommand('copy');
+                // Could replace with simpler feedback
+                const btn = event.currentTarget;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-green-500"></i>`;
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    lucide.createIcons();
+                }, 1500);
+            },
+
+            /**
+             * API: PRICE & MARKET DATA
+             */
+            fetchPrice: async () => {
+                try {
+                    const res = await fetch(app.API_PRICE);
+                    const data = await res.json();
+                    const btc = data.bitcoin;
+
+                    app.state.btcPrice = btc.usd;
+                    app.state.btcPriceINR = btc.inr;
+
+                    document.getElementById('btcPriceUSD').innerText = `$${btc.usd.toLocaleString()}`;
+                    document.getElementById('btcPriceINR').innerText = `₹${btc.inr.toLocaleString()}`;
+                    document.getElementById('marketCap').innerText = `$${(btc.usd_market_cap / 1e9).toFixed(2)} B`;
+                    
+                    const changeElem = document.getElementById('priceChange');
+                    const change = btc.usd_24h_change.toFixed(2);
+                    changeElem.innerText = `${change > 0 ? '+' : ''}${change}%`;
+                    changeElem.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${change >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`;
+                } catch (e) {
+                    console.error("Price fetch failed", e);
+                }
+            },
+
+            /**
+             * API: BLOCKCHAIN DATA
+             */
+            fetchRecentBlocks: async () => {
+                try {
+                    // 1. Get Tip Height
+                    const heightRes = await fetch(`${app.API_BLOCKCHAIN}/blocks/tip/height`);
+                    const tipHeight = await heightRes.text();
+                    document.getElementById('latestBlockHeight').innerText = tipHeight;
+
+                    // 2. Get Last 10 Blocks
+                    const blocksRes = await fetch(`${app.API_BLOCKCHAIN}/blocks`);
+                    const blocks = await blocksRes.json();
+                    
+                    const tbody = document.getElementById('blocksTableBody');
+                    tbody.innerHTML = '';
+
+                    blocks.slice(0, 10).forEach(block => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-white/30 dark:hover:bg-slate-800/30 transition-colors cursor-pointer';
+                        row.onclick = () => app.loadBlock(block.id);
+                        
+                        const timeAgo = app.timeSince(block.timestamp * 1000);
+                        
+                        row.innerHTML = `
+                            <td class="px-4 py-3 font-mono text-btc font-semibold">${block.height}</td>
+                            <td class="px-4 py-3 font-mono text-xs text-slate-500 truncate max-w-[100px]">${block.id.substring(0, 8)}...${block.id.substring(block.id.length-8)}</td>
+                            <td class="px-4 py-3 text-slate-600 dark:text-slate-400">${timeAgo}</td>
+                            <td class="px-4 py-3 text-right font-mono">${block.tx_count}</td>
+                            <td class="px-4 py-3 text-right font-mono">${(block.size / 1024).toFixed(1)}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } catch (e) {
+                    console.error("Blocks fetch failed", e);
+                }
+            },
+
+            /**
+             * CORE SEARCH LOGIC
+             */
+            handleSearch: async () => {
+                const input = document.getElementById('searchInput').value.trim();
+                if (!input) return;
+
+                // Simple Regex Heuristics
+                const isBlockHeight = /^\d+$/.test(input);
+                const isHash = /^[a-fA-F0-9]{64}$/.test(input);
+                const isAddress = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[a-z0-9]{39,59}$/i.test(input);
+
+                if (isBlockHeight) {
+                    // It's a height, we need the hash first usually, but some APIs take height.
+                    // Blockstream needs hash. So we fetch tip or search by height hash
+                    try {
+                        const hashRes = await fetch(`${app.API_BLOCKCHAIN}/block-height/${input}`);
+                        if(!hashRes.ok) throw new Error("Block not found");
+                        const hash = await hashRes.text();
+                        app.loadBlock(hash);
+                    } catch(e) { app.showError('Block height not found'); }
+                } else if (isHash) {
+                    // Could be Block or Tx. Try Tx first.
+                    try {
+                        const txRes = await fetch(`${app.API_BLOCKCHAIN}/tx/${input}`);
+                        if (txRes.ok) {
+                            app.loadTx(input);
+                        } else {
+                            // Try block
+                             app.loadBlock(input);
+                        }
+                    } catch (e) { app.loadBlock(input); } // Fallback try block
+                } else if (isAddress) {
+                    app.loadAddress(input);
+                } else {
+                    app.showError('Invalid format. Try Address, TxID or Block Height.');
+                }
+            },
+
+            /**
+             * LOAD & RENDER ADDRESS
+             */
+            loadAddress: async (address) => {
+                try {
+                    app.showView('view-address');
+                    document.getElementById('addressHash').innerText = address;
+                    
+                    // Generate QR
+                    document.getElementById('addressQrCode').innerHTML = "";
+                    new QRCode(document.getElementById('addressQrCode'), {
+                        text: address,
+                        width: 100,
+                        height: 100,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // Fetch Stats
+                    const res = await fetch(`${app.API_BLOCKCHAIN}/address/${address}`);
+                    if(!res.ok) throw new Error("Address invalid");
+                    const data = await res.json();
+
+                    const chain = data.chain_stats;
+                    const mempool = data.mempool_stats; // Unconfirmed
+
+                    const bal = chain.funded_txo_sum - chain.spent_txo_sum + mempool.funded_txo_sum - mempool.spent_txo_sum;
+                    const totalRx = chain.funded_txo_sum + mempool.funded_txo_sum;
+                    const totalSent = chain.spent_txo_sum + mempool.spent_txo_sum;
+
+                    document.getElementById('addrBalance').innerText = `${app.satsToBtc(bal)} BTC`;
+                    document.getElementById('addrBalanceFiat').innerText = app.btcToFiat(app.satsToBtc(bal));
+                    document.getElementById('addrReceived').innerText = `${app.satsToBtc(totalRx)} BTC`;
+                    document.getElementById('addrSent').innerText = `${app.satsToBtc(totalSent)} BTC`;
+                    document.getElementById('addrTxCount').innerText = chain.tx_count + mempool.tx_count;
+
+                    // Fetch Txs
+                    const txRes = await fetch(`${app.API_BLOCKCHAIN}/address/${address}/txs`);
+                    const txs = await txRes.json();
+                    
+                    const list = document.getElementById('addressTxList');
+                    list.innerHTML = '';
+                    
+                    txs.forEach(tx => {
+                        const isRx = tx.vout.some(out => out.scriptpubkey_address === address);
+                        // Simplified logic for UI: if any output is to us, we "Received", otherwise we "Sent" (rough approx)
+                        // Precise logic requires checking inputs.
+                        
+                        let flowVal = 0;
+                        let flowType = 'Sent';
+                        
+                        // Check if we are in inputs (Sent)
+                        const iSent = tx.vin.some(vin => vin.prevout && vin.prevout.scriptpubkey_address === address);
+                        
+                        if(iSent) {
+                            // Sum up value sent to others
+                            flowType = 'Sent';
+                             // Simple calc: Total Input from us - Change back to us
+                             // Keep it simple for UI: just show it's a tx
+                        } else {
+                            flowType = 'Received';
+                        }
+
+                        const div = document.createElement('div');
+                        div.className = 'glass-panel p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 cursor-pointer hover:bg-white/50 transition';
+                        div.onclick = () => app.loadTx(tx.txid);
+                        div.innerHTML = `
+                            <div class="flex items-center gap-3 w-full md:w-auto">
+                                <div class="p-2 rounded-lg ${flowType === 'Received' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                                    <i data-lucide="${flowType === 'Received' ? 'arrow-down-left' : 'arrow-up-right'}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="truncate">
+                                    <div class="font-mono text-sm truncate max-w-[200px] text-slate-700 dark:text-slate-300">${tx.txid}</div>
+                                    <div class="text-xs text-slate-500">${tx.status.confirmed ? app.timeSince(tx.status.block_time * 1000) : 'Unconfirmed'}</div>
+                                </div>
+                            </div>
+                            <div class="font-mono font-bold text-sm bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-lg">
+                                ${tx.status.confirmed ? 'Confirmed' : 'Mempool'}
+                            </div>
+                        `;
+                        list.appendChild(div);
+                        lucide.createIcons();
+                    });
+
+                } catch (e) {
+                    app.showError("Address not found or API error");
+                    app.showHome();
+                }
+            },
+
+            /**
+             * LOAD & RENDER TRANSACTION
+             */
+            loadTx: async (txid) => {
+                try {
+                    app.showView('view-tx');
+                    document.getElementById('txHash').innerText = txid;
+
+                    const res = await fetch(`${app.API_BLOCKCHAIN}/tx/${txid}`);
+                    if(!res.ok) throw new Error("Tx not found");
+                    const tx = await res.json();
+
+                    // Status
+                    const statusEl = document.getElementById('txStatus');
+                    if (tx.status.confirmed) {
+                        statusEl.className = "mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+                        statusEl.innerText = "Confirmed";
+                        document.getElementById('txBlockHeight').innerText = tx.status.block_height;
+                        document.getElementById('txBlockHeight').onclick = () => app.loadBlockByHeight(tx.status.block_height);
+                        
+                        // Get tip for confs
+                        const tipRes = await fetch(`${app.API_BLOCKCHAIN}/blocks/tip/height`);
+                        const tip = await tipRes.text();
+                        document.getElementById('txConfirmations').innerText = (parseInt(tip) - tx.status.block_height + 1);
+                    } else {
+                        statusEl.className = "mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+                        statusEl.innerText = "Unconfirmed";
+                        document.getElementById('txBlockHeight').innerText = "Pending";
+                        document.getElementById('txConfirmations').innerText = "0";
+                    }
+
+                    document.getElementById('txFee').innerText = `${tx.fee.toLocaleString()} Sats`;
+
+                    // Calc Total Output
+                    let totalOut = 0;
+                    tx.vout.forEach(v => totalOut += v.value);
+                    document.getElementById('txTotal').innerText = `${app.satsToBtc(totalOut)} BTC`;
+
+                    // Render Inputs
+                    const inputsDiv = document.getElementById('txInputs');
+                    inputsDiv.innerHTML = '';
+                    tx.vin.forEach(vin => {
+                        const el = document.createElement('div');
+                        el.className = "bg-white/50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm";
+                        if (vin.is_coinbase) {
+                            el.innerHTML = `<span class="text-btc font-bold">Coinbase (Newly Mined Coins)</span>`;
+                        } else {
+                            const addr = vin.prevout ? vin.prevout.scriptpubkey_address : 'Unknown';
+                            const val = vin.prevout ? app.satsToBtc(vin.prevout.value) : '0';
+                            el.innerHTML = `
+                                <div class="flex justify-between mb-1">
+                                    <a href="#" onclick="app.loadAddress('${addr}')" class="text-blue-500 hover:underline truncate w-2/3 block font-mono text-xs">${addr}</a>
+                                    <span class="font-bold text-slate-700 dark:text-slate-300">${val} BTC</span>
+                                </div>
+                            `;
+                        }
+                        inputsDiv.appendChild(el);
+                    });
+
+                    // Render Outputs
+                    const outputsDiv = document.getElementById('txOutputs');
+                    outputsDiv.innerHTML = '';
+                    tx.vout.forEach(vout => {
+                        const el = document.createElement('div');
+                        el.className = "bg-white/50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm";
+                        const addr = vout.scriptpubkey_address || 'OP_RETURN / Unknown';
+                        const val = app.satsToBtc(vout.value);
+                        
+                        el.innerHTML = `
+                            <div class="flex justify-between mb-1">
+                                <a href="#" onclick="${vout.scriptpubkey_address ? `app.loadAddress('${addr}')` : ''}" class="${vout.scriptpubkey_address ? 'text-blue-500 hover:underline' : 'text-slate-500'} truncate w-2/3 block font-mono text-xs">${addr}</a>
+                                <span class="font-bold text-green-600 dark:text-green-400">${val} BTC</span>
+                            </div>
+                        `;
+                        outputsDiv.appendChild(el);
+                    });
+
+                } catch (e) {
+                    console.error(e);
+                    app.showError("Transaction not found");
+                }
+            },
+
+            loadBlockByHeight: async (height) => {
+                 try {
+                    const hashRes = await fetch(`${app.API_BLOCKCHAIN}/block-height/${height}`);
+                    const hash = await hashRes.text();
+                    app.loadBlock(hash);
+                 } catch(e) { app.showError("Block height error"); }
+            },
+
+            /**
+             * LOAD & RENDER BLOCK
+             */
+            loadBlock: async (hash) => {
+                try {
+                    app.showView('view-block');
+                    document.getElementById('blockHashDisplay').innerText = hash;
+
+                    const res = await fetch(`${app.API_BLOCKCHAIN}/block/${hash}`);
+                    if(!res.ok) throw new Error("Block not found");
+                    const block = await res.json();
+
+                    document.getElementById('blockHeightDisplay').innerText = block.height;
+                    document.getElementById('blockTimeDisplay').innerText = new Date(block.timestamp * 1000).toLocaleString();
+                    document.getElementById('blockTxCountDisplay').innerText = block.tx_count.toLocaleString();
+                    document.getElementById('blockSizeDisplay').innerText = (block.size / 1024).toFixed(2) + " KB";
+
+                    // Fetch Transactions in block (first 10)
+                    const txRes = await fetch(`${app.API_BLOCKCHAIN}/block/${hash}/txs`);
+                    const txs = await txRes.json();
+                    
+                    const list = document.getElementById('blockTxList');
+                    list.innerHTML = '';
+                    txs.slice(0, 10).forEach(tx => {
+                        const d = document.createElement('div');
+                        d.className = "p-3 bg-white/40 dark:bg-slate-800/40 rounded-lg flex justify-between items-center cursor-pointer hover:bg-white/60 transition";
+                        d.onclick = () => app.loadTx(tx.txid);
+                        d.innerHTML = `
+                            <span class="font-mono text-xs text-blue-500 truncate w-2/3">${tx.txid}</span>
+                            <span class="text-xs font-bold">${app.satsToBtc(tx.vout.reduce((a,b)=>a+b.value,0)).toFixed(4)} BTC</span>
+                        `;
+                        list.appendChild(d);
+                    });
+
+                } catch (e) {
+                    app.showError("Block not found");
+                }
+            },
+
+            /**
+             * UTILS
+             */
+            satsToBtc: (sats) => (sats / 100000000),
+            
+            btcToFiat: (btc) => {
+                return `$${(btc * app.state.btcPrice).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            },
+
+            timeSince: (date) => {
+                const seconds = Math.floor((new Date() - date) / 1000);
+                let interval = seconds / 31536000;
+                if (interval > 1) return Math.floor(interval) + "y ago";
+                interval = seconds / 2592000;
+                if (interval > 1) return Math.floor(interval) + "mo ago";
+                interval = seconds / 86400;
+                if (interval > 1) return Math.floor(interval) + "d ago";
+                interval = seconds / 3600;
+                if (interval > 1) return Math.floor(interval) + "h ago";
+                interval = seconds / 60;
+                if (interval > 1) return Math.floor(interval) + "m ago";
+                return Math.floor(seconds) + "s ago";
+            }
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', app.init);
+
+    </script>
+</body>
+</html>
