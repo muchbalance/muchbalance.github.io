@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Much Balance | Modern Explorer</title>
+    <title>MuchBalance V2 | Modern Explorer</title>
     <link rel="icon" href="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/f32.ico" type="image/x-icon">
     
     <!-- jQuery -->
@@ -87,6 +87,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--primary);
+            order: 1; /* Desktop Order */
         }
         .logo img { width: 40px; margin-right: 10px; }
 
@@ -95,6 +96,7 @@
             max-width: 500px;
             position: relative;
             margin: 0 20px;
+            order: 2; /* Desktop Order */
         }
 
         .search-input {
@@ -130,6 +132,12 @@
             justify-content: center;
         }
         .search-btn:hover { background: var(--primary-hover); }
+
+        .nav-actions {
+            order: 3; /* Desktop Order */
+            display: flex;
+            gap: 5px;
+        }
 
         .nav-actions button {
             background: none;
@@ -229,10 +237,35 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* MOBILE OPTIMIZATIONS */
         @media (max-width: 600px) {
-            .navbar { flex-direction: column; gap: 15px; }
-            .search-container { width: 100%; margin: 10px 0; }
-            .balance-section h2 { font-size: 2.5rem; }
+            .navbar {
+                flex-wrap: wrap; /* Allow wrapping */
+                padding: 10px 5%;
+                gap: 5px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+                flex: 1; /* Takes left space */
+                order: 1; /* Row 1 Left */
+            }
+            
+            .nav-actions {
+                order: 2; /* Row 1 Right */
+            }
+
+            .search-container {
+                width: 100%;
+                margin: 10px 0 5px 0;
+                order: 3; /* Row 2 Full Width */
+                max-width: none;
+            }
+
+            .balance-section h2 { font-size: 2.2rem; }
+            
+            .stats-row { justify-content: flex-start; }
+            .stat-item { flex: 1 1 45%; } /* 2 items per row on mobile stats */
         }
     </style>
 </head>
@@ -248,7 +281,7 @@
     <nav class="navbar">
         <div class="logo">
             <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dogecoin-300.png" alt="Logo">
-            MuchBalance
+            MuchBalance V2
         </div>
         
         <div class="search-container">
@@ -288,10 +321,10 @@
                 </div>
             </div>
             <div class="stat-item">
-                <div class="stat-icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
                 <div class="stat-info">
-                    <small>Pending Txs</small>
-                    <b id="net-txs">Loading...</b>
+                    <small>24h Txs</small>
+                    <b id="net-24h">Loading...</b>
                 </div>
             </div>
         </div>
@@ -360,6 +393,16 @@
             $('#search-input').on('keypress', function(e) {
                 if(e.which == 13) triggerSearch();
             });
+
+            // Input clearing listener
+            $('#search-input').on('input', function() {
+                var val = $(this).val().trim();
+                // If empty or very short, hide results and show hero
+                if(val.length < 5) {
+                    $('#result-area').fadeOut();
+                    $('#hero-placeholder').fadeIn();
+                }
+            });
         });
 
         // 1. Theme Switcher logic
@@ -391,26 +434,37 @@
                 }
             });
 
-            // Chain (BlockCypher)
+            // Chain Info (BlockCypher for Height)
             $.get("https://api.blockcypher.com/v1/doge/main", function(data){
                 if(data.height) {
                     $('#net-blocks').text(data.height.toLocaleString());
-                    $('#net-txs').text(data.unconfirmed_count.toLocaleString());
                 }
+            });
+
+            // 24h Transactions (Blockchair - Free endpoint for stats)
+            // BlockCypher doesn't easily provide 24h count, so using Blockchair just for this specific stat
+            $.get("https://api.blockchair.com/dogecoin/stats", function(data){
+                if(data && data.data && data.data.transactions_24h) {
+                    $('#net-24h').text(data.data.transactions_24h.toLocaleString());
+                } else {
+                    $('#net-24h').text("N/A");
+                }
+            }).fail(function() {
+                $('#net-24h').text("...");
             });
         }
 
-        // 3. Search & Balance Logic
+        // 3. Search & Balance Logic (BlockCypher)
         function triggerSearch() {
             let address = $('#search-input').val().trim();
-            if(!address) return;
+            if(!address || address.length < 20) return;
 
             // Basic UI Transition
             $('#hero-placeholder').slideUp();
             $('#result-area').fadeOut();
             $('#loader').show();
 
-            // Fetch
+            // Fetch using BlockCypher as requested
             var url = "https://api.blockcypher.com/v1/doge/main/addrs/" + address + "/balance";
 
             $.ajax({
@@ -442,11 +496,19 @@
                 },
                 error: function(err) {
                     $('#loader').hide();
-                    $('#hero-placeholder').slideDown();
-                    
-                    if(err.status === 404) alert("Address not found! Please check.");
-                    else if(err.status === 429) alert("API Rate Limit. Please wait a moment.");
-                    else alert("Error fetching data.");
+                    // Don't show hero immediately if just a rate limit error, maybe let user retry
+                    if(err.status === 404) {
+                        alert("Address not found!");
+                        $('#hero-placeholder').slideDown();
+                    }
+                    else if(err.status === 429) {
+                        alert("API Rate Limit (BlockCypher). Please wait a moment.");
+                         // Keep loader hidden but don't reset view completely so they can click again
+                    }
+                    else {
+                        alert("Error fetching data.");
+                        $('#hero-placeholder').slideDown();
+                    }
                 }
             });
         }
