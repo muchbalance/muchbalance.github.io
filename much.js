@@ -39,12 +39,12 @@ var mm = document.getElementById("more");
   });
 
 $(document).ready(function() {
-  $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(price) {
-                  $('#price').html('$' + price.data.prices[0].price);
+  $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(price) {
+                  $('#price').html('$' + price.dogecoin.usd);
   });
   $('#refp').click(function() {
-    $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(price) {
-                  $('#price').html('$' + price.data.prices[0].price);
+    $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(price) {
+                  $('#price').html('$' + price.dogecoin.usd);
   });
   });
 function thousands_separators(num)
@@ -57,20 +57,20 @@ function thousands_separators(num)
     fnum = parseFloat(ae).toFixed(2);
     return fnum;
   }
-  $.getJSON('https://api.blockchair.com/dogecoin/stats', function(data) {
+  $.getJSON('https://api.blockchair.com/dogecoin/stats?token=225c7ec76075439caa03021ba215fa01', function(data) {
                   $.transactions_24h = thousands_separators(data.data.transactions_24h);
                     $('#transactions').html("<i class='fa fa-bar-chart'></i> Txs(24h): " + $.transactions_24h);
   });
-  $.getJSON('https://chain.so/api/v2/get_info/DOGE', function(data) {
-                  $.blocks = thousands_separators(data.data.blocks);
+  $.getJSON('https://api.blockcypher.com/v1/doge/main?token=225c7ec76075439caa03021ba215fa01', function(data) {
+                  $.blocks = thousands_separators(data.height);
                     $('#blocks').html("<i class='fa fa-cubes'></i> Blocks: " + $.blocks);
   });
                
            $('#add').on('keyup', function() {
 
-               $.getJSON('https://chain.so/api/v2/get_address_balance/DOGE/' + $('#add').val(), function(data) {
-                $.blnc = data.data.confirmed_balance;
-                  $('#oneb').html('<br/><div id="addData" style="overflow:hidden;"><div id="saData"><div style="display:block;padding:5px;float: left;"><div style="padding-left: 20px;padding-top: 5px;"><p style="font-size: 13px;color: white;">Identified using <strong><a href="https://chain.so" target="_blank" style="color: #fff;text-decoration: underline;">SoChain</a></strong></p><p id="tellAdd" style="color: white;"></p></div></div><div style="padding:10px;margin-top: 18px;" id="qrcode"><img id="qrimg" height="50" width="50" style="background: white;" /></div></div><br/><div style="padding:5px;"><div style="padding-left: 20px;"><span id="totalBalance">Total Balance :</span><br/><span id="showingBalance" style="font-size: 20px;"><b>Ð' + thousands_separators(wot($.blnc)) + '</b></span><span id="val" style="font-size:13px;"></span></div></div><br/></div><br/><div id="addData"><div style="display: block;margin: auto;padding: 25px;"><span>Received Amount : </span><br/><span id="rv" style="color: rgb(26,145,70);"></span><span id="rvv" style="font-size:13px;"></span><br/><br/><span>Sent Amount : </span><br/><span id="sv" style="color: rgb(255,69,94);"></span><span id="svv" style="font-size:13px;"></span><br/><br/><center style="display:flex;justify-content:space-around;"><a id="vosc" href="" target="_blank"><i class="fa fa-eye"></i> View on DogeChain</a><a id="senddg" href="">Ð Send Dogecoin</a></center></div></div><br/><br/><br/>');
+               $.getJSON('https://api.blockcypher.com/v1/doge/main/addrs/' + $('#add').val() + '/balance?token=225c7ec76075439caa03021ba215fa01', function(data) {
+                $.blnc = data.balance/100000000;
+                  $('#oneb').html('<br/><div id="addData" style="overflow:hidden;"><div id="saData"><div style="display:block;padding:5px;float: left;"><div style="padding-left: 20px;padding-top: 5px;"><p style="font-size: 13px;color: white;">Identified using <strong><a href="https://www.blockcypher.com/" target="_blank" style="color: #fff;text-decoration: underline;">BlockCypher</a></strong></p><p id="tellAdd" style="color: white;"></p></div></div><div style="padding:10px;margin-top: 18px;" id="qrcode"><img id="qrimg" height="50" width="50" style="background: white;" /></div></div><br/><div style="padding:5px;"><div style="padding-left: 20px;"><span id="totalBalance">Total Balance :</span><br/><span id="showingBalance" style="font-size: 20px;"><b>Ð' + thousands_separators(wot($.blnc)) + '</b></span><span id="val" style="font-size:13px;"></span></div></div><br/></div><br/><div id="addData"><div style="display: block;margin: auto;padding: 25px;"><span>Received Amount : </span><br/><span id="rv" style="color: rgb(26,145,70);"></span><span id="rvv" style="font-size:13px;"></span><br/><br/><span>Sent Amount : </span><br/><span id="sv" style="color: rgb(255,69,94);"></span><span id="svv" style="font-size:13px;"></span><br/><br/><center style="display:flex;justify-content:space-around;"><a id="vosc" href="" target="_blank"><i class="fa fa-eye"></i> View on DogeChain</a><a id="senddg" href="">Ð Send Dogecoin</a></center></div></div><br/><br/><br/>');
                   var GenerateQRCode, htmlEncode;
     htmlEncode = function(value) {
     return $('<div/>').text(value).html();
@@ -79,7 +79,7 @@ function thousands_separators(num)
     
     $('#qrimg').empty();
     // Generate and Output QR Code
-    $('#qrimg').attr('src', 'https://chart.googleapis.com/chart?cht=qr&chl=' + htmlEncode('dogecoin:'+$('#add').val()) + '&chs=500x500&chld=L|0');
+    $('#qrimg').attr('src', 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + htmlEncode('dogecoin:'+$('#add').val()));
 //$("#qdn").prop("download", $('#add').val());
 //$("#qdn").prop("href", $('#qrimg').attr("src")+'.jpg');
 var modal = document.getElementById("sQRModal");
@@ -100,22 +100,22 @@ span.onclick = function() {
   modal.style.display = "none";
 } 
 
-                  $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(price) {
-                  $('#val').html('&nbsp;($' + thousands_separators(wot($.blnc*price.data.prices[0].price)) + ')');
+                  $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(price) {
+                  $('#val').html('&nbsp;($' + thousands_separators(wot($.blnc*price.dogecoin.usd)) + ')');
                    
           });
-                  $.getJSON('https://chain.so/api/v2/get_address_received/DOGE/' + $('#add').val(), function(data) {
-                  $('#rv').html('<b>Ð' + thousands_separators(wot(data.data.confirmed_received_value)) + '</b>');
-                  $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(price) {
-                  $.rv = data.data.confirmed_received_value;
-                  $('#rvv').html('&nbsp;($' + thousands_separators(wot($.rv*price.data.prices[0].price)) + ')');
+                  $.getJSON('https://api.blockcypher.com/v1/doge/main/addrs/' + $('#add').val() + '/balance?token=225c7ec76075439caa03021ba215fa01', function(data) {
+                  $('#rv').html('<b>Ð' + thousands_separators(wot(data.total_received/100000000)) + '</b>');
+                  $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(price) {
+                  $.rv = data.total_received/100000000;
+                  $('#rvv').html('&nbsp;($' + thousands_separators(wot($.rv*price.dogecoin.usd)) + ')');
                   });
                });
-               $.getJSON('https://chain.so/api/v2/get_address_spent/DOGE/' + $('#add').val(), function(data) {
-                  $('#sv').html('<b> Ð' + thousands_separators(wot(data.data.confirmed_sent_value)) + '</b>');
-                  $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(price) {
-                  $.sv = data.data.confirmed_sent_value;
-                  $('#svv').html('&nbsp;($' + thousands_separators(wot($.sv*price.data.prices[0].price)) + ')');
+               $.getJSON('https://api.blockcypher.com/v1/doge/main/addrs/' + $('#add').val() + '/balance?token=225c7ec76075439caa03021ba215fa01', function(data) {
+                  $('#sv').html('<b> Ð' + thousands_separators(wot(data.total_sent/100000000)) + '</b>');
+                  $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(price) {
+                  $.sv = data.total_sent/100000000;
+                  $('#svv').html('&nbsp;($' + thousands_separators(wot($.sv*price.dogecoin.usd)) + ')');
                   });
                });
                $.vosc = "http://www.dogechain.info/address/" + $('#add').val();
@@ -139,15 +139,15 @@ function thousands_separatorsH(num)
     return numf;
   }
    $('#dolv').on('input', function() {
-      $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(daata) {
-                  $("#dogv").val(thousands_separatorsH(loAt($("#dolv").val()/daata.data.prices[0].price)));
+      $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(daata) {
+                  $("#dogv").val(thousands_separatorsH(loAt($("#dolv").val()/daata.dogecoin.usd)));
                    
           });
    });
    
    $('#dogv').on('input', function() {
-      $.getJSON('https://chain.so/api/v2/get_price/DOGE/USD', function(daata) {
-                  $("#dolv").val(thousands_separatorsH(loAt($("#dogv").val()*daata.data.prices[0].price)));
+      $.getJSON('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd', function(daata) {
+                  $("#dolv").val(thousands_separatorsH(loAt($("#dogv").val()*daata.dogecoin.usd)));
                    
           });
    });
@@ -156,7 +156,7 @@ function thousands_separatorsH(num)
       $("#dolv").val("");
    });
    $('#nadd').on('input', function() {
-      $.getJSON('https://chain.so/api/v2/get_address_balance/DOGE/' + $('#nadd').val(), function(daata) {
+      $.getJSON('https://api.blockcypher.com/v1/doge/main/addrs/' + $('#nadd').val() + '/balance?token=225c7ec76075439caa03021ba215fa01', function(daata) {
         
         $("#amnt").removeAttr("disabled");
         $("#generate").removeAttr("disabled");
@@ -169,7 +169,7 @@ function thousands_separatorsH(num)
     htmlEncode = function(value) {
     return $('<div/>').text(value).html();
   };
-      $('#qrimgz').attr('src', 'https://chart.googleapis.com/chart?cht=qr&chl='+htmlEncode('dogecoin:'+$('#nadd').val()+'?amount='+$('#amnt').val())+'&chs=500x500&chld=L|0.png');
+      $('#qrimgz').attr('src', 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+htmlEncode('dogecoin:'+$('#nadd').val()+'?amount='+$('#amnt').val()));
       $("#ndq").prop("href", $('#qrimgz').attr("src")+'.jpg');
                    
           });
