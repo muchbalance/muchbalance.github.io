@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liquid Bitcoin Explorer</title>
+    <title>BitGlass Explorer - Modern Bitcoin Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Chart.js for small sparklines if needed, or simple SVGs -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- QRCode.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Google Fonts -->
@@ -168,7 +166,7 @@
                         </div>
                         <input type="text" id="searchInput" 
                             class="block w-full pl-10 pr-3 py-2.5 bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl leading-5 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-btc focus:border-transparent transition duration-150 ease-in-out sm:text-sm backdrop-blur-sm"
-                            placeholder="Search Address, TxID, or Block Hash..."
+                            placeholder="Search Address, TxID, or Block Height..."
                             onkeypress="if(event.key === 'Enter') app.handleSearch()">
                         <button onclick="app.handleSearch()" class="absolute right-2 top-1.5 p-1 bg-btc/10 hover:bg-btc/20 rounded-lg text-btc transition-colors">
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -442,7 +440,7 @@
     <!-- Footer -->
     <footer class="mt-auto py-8 text-center text-slate-500 text-sm relative z-10">
         <div class="glass-panel inline-block px-6 py-2 rounded-full">
-            Built by <strong>Gemini</strong> for Naveen Soni &bull; Powered by CoinGecko & Blockstream
+            Built by <strong>Naveen Soni</strong> &bull; Powered by CoinGecko & Blockstream
         </div>
     </footer>
 
@@ -542,7 +540,7 @@
 
                     document.getElementById('btcPriceUSD').innerText = `$${btc.usd.toLocaleString()}`;
                     document.getElementById('btcPriceINR').innerText = `₹${btc.inr.toLocaleString()}`;
-                    document.getElementById('marketCap').innerText = `$${(btc.usd_market_cap / 1e9).toFixed(2)} B`;
+                    document.getElementById('marketCap').innerText = `$${(btc.usd_market_cap / 1e9).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} B`;
                     
                     const changeElem = document.getElementById('priceChange');
                     const change = btc.usd_24h_change.toFixed(2);
@@ -561,7 +559,7 @@
                     // 1. Get Tip Height
                     const heightRes = await fetch(`${app.API_BLOCKCHAIN}/blocks/tip/height`);
                     const tipHeight = await heightRes.text();
-                    document.getElementById('latestBlockHeight').innerText = tipHeight;
+                    document.getElementById('latestBlockHeight').innerText = parseInt(tipHeight).toLocaleString();
 
                     // 2. Get Last 10 Blocks
                     const blocksRes = await fetch(`${app.API_BLOCKCHAIN}/blocks`);
@@ -578,11 +576,11 @@
                         const timeAgo = app.timeSince(block.timestamp * 1000);
                         
                         row.innerHTML = `
-                            <td class="px-4 py-3 font-mono text-btc font-semibold">${block.height}</td>
+                            <td class="px-4 py-3 font-mono text-btc font-semibold">${block.height.toLocaleString()}</td>
                             <td class="px-4 py-3 font-mono text-xs text-slate-500 truncate max-w-[100px]">${block.id.substring(0, 8)}...${block.id.substring(block.id.length-8)}</td>
                             <td class="px-4 py-3 text-slate-600 dark:text-slate-400">${timeAgo}</td>
-                            <td class="px-4 py-3 text-right font-mono">${block.tx_count}</td>
-                            <td class="px-4 py-3 text-right font-mono">${(block.size / 1024).toFixed(1)}</td>
+                            <td class="px-4 py-3 text-right font-mono">${block.tx_count.toLocaleString()}</td>
+                            <td class="px-4 py-3 text-right font-mono">${(block.size / 1024).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}</td>
                         `;
                         tbody.appendChild(row);
                     });
@@ -661,11 +659,11 @@
                     const totalRx = chain.funded_txo_sum + mempool.funded_txo_sum;
                     const totalSent = chain.spent_txo_sum + mempool.spent_txo_sum;
 
-                    document.getElementById('addrBalance').innerText = `${app.satsToBtc(bal)} BTC`;
+                    document.getElementById('addrBalance').innerText = `${app.satsToBtc(bal).toLocaleString(undefined, {maximumFractionDigits: 8})} BTC`;
                     document.getElementById('addrBalanceFiat').innerText = app.btcToFiat(app.satsToBtc(bal));
-                    document.getElementById('addrReceived').innerText = `${app.satsToBtc(totalRx)} BTC`;
-                    document.getElementById('addrSent').innerText = `${app.satsToBtc(totalSent)} BTC`;
-                    document.getElementById('addrTxCount').innerText = chain.tx_count + mempool.tx_count;
+                    document.getElementById('addrReceived').innerText = `${app.satsToBtc(totalRx).toLocaleString(undefined, {maximumFractionDigits: 8})} BTC`;
+                    document.getElementById('addrSent').innerText = `${app.satsToBtc(totalSent).toLocaleString(undefined, {maximumFractionDigits: 8})} BTC`;
+                    document.getElementById('addrTxCount').innerText = (chain.tx_count + mempool.tx_count).toLocaleString();
 
                     // Fetch Txs
                     const txRes = await fetch(`${app.API_BLOCKCHAIN}/address/${address}/txs`);
@@ -738,13 +736,13 @@
                     if (tx.status.confirmed) {
                         statusEl.className = "mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
                         statusEl.innerText = "Confirmed";
-                        document.getElementById('txBlockHeight').innerText = tx.status.block_height;
+                        document.getElementById('txBlockHeight').innerText = tx.status.block_height.toLocaleString();
                         document.getElementById('txBlockHeight').onclick = () => app.loadBlockByHeight(tx.status.block_height);
                         
                         // Get tip for confs
                         const tipRes = await fetch(`${app.API_BLOCKCHAIN}/blocks/tip/height`);
                         const tip = await tipRes.text();
-                        document.getElementById('txConfirmations').innerText = (parseInt(tip) - tx.status.block_height + 1);
+                        document.getElementById('txConfirmations').innerText = (parseInt(tip) - tx.status.block_height + 1).toLocaleString();
                     } else {
                         statusEl.className = "mt-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
                         statusEl.innerText = "Unconfirmed";
@@ -757,7 +755,7 @@
                     // Calc Total Output
                     let totalOut = 0;
                     tx.vout.forEach(v => totalOut += v.value);
-                    document.getElementById('txTotal').innerText = `${app.satsToBtc(totalOut)} BTC`;
+                    document.getElementById('txTotal').innerText = `${app.satsToBtc(totalOut).toLocaleString(undefined, {maximumFractionDigits: 8})} BTC`;
 
                     // Render Inputs
                     const inputsDiv = document.getElementById('txInputs');
@@ -769,7 +767,7 @@
                             el.innerHTML = `<span class="text-btc font-bold">Coinbase (Newly Mined Coins)</span>`;
                         } else {
                             const addr = vin.prevout ? vin.prevout.scriptpubkey_address : 'Unknown';
-                            const val = vin.prevout ? app.satsToBtc(vin.prevout.value) : '0';
+                            const val = vin.prevout ? app.satsToBtc(vin.prevout.value).toLocaleString(undefined, {maximumFractionDigits: 8}) : '0';
                             el.innerHTML = `
                                 <div class="flex justify-between mb-1">
                                     <a href="#" onclick="app.loadAddress('${addr}')" class="text-blue-500 hover:underline truncate w-2/3 block font-mono text-xs">${addr}</a>
@@ -787,7 +785,7 @@
                         const el = document.createElement('div');
                         el.className = "bg-white/50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-sm";
                         const addr = vout.scriptpubkey_address || 'OP_RETURN / Unknown';
-                        const val = app.satsToBtc(vout.value);
+                        const val = app.satsToBtc(vout.value).toLocaleString(undefined, {maximumFractionDigits: 8});
                         
                         el.innerHTML = `
                             <div class="flex justify-between mb-1">
@@ -824,10 +822,10 @@
                     if(!res.ok) throw new Error("Block not found");
                     const block = await res.json();
 
-                    document.getElementById('blockHeightDisplay').innerText = block.height;
+                    document.getElementById('blockHeightDisplay').innerText = block.height.toLocaleString();
                     document.getElementById('blockTimeDisplay').innerText = new Date(block.timestamp * 1000).toLocaleString();
                     document.getElementById('blockTxCountDisplay').innerText = block.tx_count.toLocaleString();
-                    document.getElementById('blockSizeDisplay').innerText = (block.size / 1024).toFixed(2) + " KB";
+                    document.getElementById('blockSizeDisplay').innerText = (block.size / 1024).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " KB";
 
                     // Fetch Transactions in block (first 10)
                     const txRes = await fetch(`${app.API_BLOCKCHAIN}/block/${hash}/txs`);
@@ -841,7 +839,7 @@
                         d.onclick = () => app.loadTx(tx.txid);
                         d.innerHTML = `
                             <span class="font-mono text-xs text-blue-500 truncate w-2/3">${tx.txid}</span>
-                            <span class="text-xs font-bold">${app.satsToBtc(tx.vout.reduce((a,b)=>a+b.value,0)).toFixed(4)} BTC</span>
+                            <span class="text-xs font-bold">${app.satsToBtc(tx.vout.reduce((a,b)=>a+b.value,0)).toLocaleString(undefined, {maximumFractionDigits: 4})} BTC</span>
                         `;
                         list.appendChild(d);
                     });
