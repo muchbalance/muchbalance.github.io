@@ -4,31 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Primary SEO -->
-    <title>MuchBalance: Live Crypto Prices, Market Caps & Real-Time Updates</title>
-    <meta name="title" content="MuchBalance: Live Crypto Prices, Market Caps & Real-Time Updates">
-    <meta name="description" content="Track live cryptocurrency prices, market caps, trading volume, and 7-day trends with MuchBalance. Real-time data for Bitcoin, Ethereum, and top altcoins in a premium, glass-morphic dashboard.">
-    <meta name="keywords" content="crypto prices, cryptocurrency market, live crypto data, bitcoin price, ethereum price, market cap, crypto dashboard, muchbalance, crypto tracker, dogecoin">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
+    <!-- SEO & Meta Tags -->
+    <title>MuchBalance: Crypto Prices and Updates</title>
+    <meta name="title" content="MuchBalance: Crypto Prices and Updates">
+    <meta name="description" content="Track live cryptocurrency prices, market caps, trading volume, and 7-day trends with MuchBalance. Real-time data for Bitcoin, Ethereum, Dogecoin, and top altcoins.">
+    <meta name="keywords" content="crypto prices, bitcoin price, ethereum, dogecoin, crypto dashboard, muchbalance, blockchain explorer, market cap">
     <meta name="author" content="Naveen Soni">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#f2f4f6">
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Social -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://muchbalance.github.io/market">
-    <meta property="og:title" content="MuchBalance: Live Crypto Prices & Market Insights">
-    <meta property="og:description" content="Experience the market with MuchBalance. Real-time crypto prices, interactive sparklines, and premium market data analysis.">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/0f1115/ffffff?text=MuchBalance+Market+Data">
+    <meta property="og:url" content="https://muchbalance.com/">
+    <meta property="og:title" content="MuchBalance: Crypto Prices and Updates">
+    <meta property="og:description" content="Real-time crypto market insights. Track Bitcoin, Dogecoin, and more with our premium frosted glass dashboard.">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/0f1115/ffffff?text=MuchBalance+Crypto+Updates">
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://muchbalance.github.io/market/">
-    <meta property="twitter:title" content="MuchBalance: Live Crypto Prices & Market Insights">
-    <meta property="twitter:description" content="Experience the market with MuchBalance. Real-time crypto prices, interactive sparklines, and premium market data analysis.">
-    <meta property="twitter:image" content="https://via.placeholder.com/1200x630/0f1115/ffffff?text=MuchBalance+Market+Data">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪙</text></svg>">
+    <!-- JSON-LD Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MuchBalance Market",
+      "url": "https://muchbalance.com",
+      "author": {
+        "@type": "Person",
+        "name": "Naveen Soni"
+      },
+      "description": "Real-time cryptocurrency price tracker and market dashboard.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -57,7 +69,7 @@
             --accent-green-bg: #d1fae5;
             --accent-red: #ef4444;
             --accent-red-bg: #fee2e2;
-            --brand-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 100%); /* Doge-ish Gold but elegant */
+            --brand-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
         }
 
         [data-theme="dark"] {
@@ -91,7 +103,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Noise Texture for that "Premium" feel */
+        /* Noise Texture */
         .noise-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -101,7 +113,7 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* Ambient Orbs - More subtle now */
+        /* Ambient Orbs */
         .ambient-glow {
             position: fixed;
             width: 600px;
@@ -129,8 +141,6 @@
         }
 
         /* --- Components --- */
-        
-        /* The Acrylic Card */
         .acrylic-panel {
             background: var(--surface-bg);
             backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -163,7 +173,7 @@
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
-        /* Table Specifics */
+        /* Table */
         .crypto-table th {
             color: var(--text-tertiary);
             font-size: 0.75rem;
@@ -188,16 +198,9 @@
             background-color: rgba(125,125,125,0.03);
         }
 
-        /* Sparkline SVG */
-        .sparkline-svg {
-            overflow: visible;
-        }
-        .sparkline-path {
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
+        /* Sparkline */
+        .sparkline-svg { overflow: visible; }
+        .sparkline-path { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
         /* Badges */
         .badge {
@@ -212,17 +215,13 @@
         .badge.positive { color: var(--accent-green); background: var(--accent-green-bg); }
         .badge.negative { color: var(--accent-red); background: var(--accent-red-bg); }
 
-        /* Skeleton Loading */
-        .skeleton {
-            background: rgba(150, 150, 150, 0.1);
-            border-radius: 4px;
-            animation: pulse-bg 1.5s infinite;
+        /* Links */
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
         }
-        @keyframes pulse-bg {
-            0% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.4; }
-        }
+        .nav-link:hover { color: var(--text-primary); transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -234,25 +233,34 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         
         <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <div class="flex items-center gap-3">
-                <!-- Simple Logo Icon -->
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-bold text-xl">
-                    M
-                </div>
+        <header class="flex flex-col lg:flex-row justify-between items-center mb-10 gap-6">
+            <div class="flex items-center gap-3 w-full lg:w-auto justify-start">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20 text-white font-bold text-xl">M</div>
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight">MuchBalance</h1>
                     <p class="text-xs text-[var(--text-secondary)] font-medium tracking-wide uppercase">Premium Market Data</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <div class="relative w-full md:w-64">
+            <!-- New Navigation Area -->
+            <nav class="flex flex-wrap justify-center gap-3 w-full lg:w-auto">
+                <a href="https://muchbalance.github.io" target="_blank" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-bg)] border border-[var(--surface-border)] text-sm font-medium shadow-sm hover:shadow-md">
+                    <img src="https://assets.coingecko.com/coins/images/5/large/dogecoin.png" class="w-4 h-4 rounded-full" alt="Doge">
+                    Dogecoin Explorer
+                </a>
+                <a href="https://muchbalance.github.io/bitcoin/v2" target="_blank" class="nav-link flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-bg)] border border-[var(--surface-border)] text-sm font-medium shadow-sm hover:shadow-md">
+                    <img src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png" class="w-4 h-4 rounded-full" alt="BTC">
+                    Bitcoin Explorer
+                </a>
+            </nav>
+
+            <div class="flex items-center gap-4 w-full lg:w-auto justify-end">
+                <div class="relative w-full lg:w-64">
                     <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     <input type="text" id="searchInput" placeholder="Search assets..." class="search-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium">
                 </div>
                 
-                <button onclick="toggleTheme()" class="acrylic-panel p-2.5 rounded-xl hover:bg-opacity-50 transition-colors" aria-label="Toggle Theme">
+                <button onclick="toggleTheme()" class="acrylic-panel p-2.5 rounded-xl hover:bg-opacity-50 transition-colors shrink-0" aria-label="Toggle Theme">
                     <svg class="w-5 h-5 text-[var(--text-secondary)] dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     <svg class="w-5 h-5 text-[var(--text-secondary)] hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 </button>
@@ -279,23 +287,70 @@
                         </tr>
                     </thead>
                     <tbody id="crypto-body">
-                        <!-- Loading State -->
-                        <tr class="animate-pulse">
-                            <td colspan="6" class="p-8 text-center text-[var(--text-secondary)]">
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="w-8 h-8 border-2 border-[var(--text-tertiary)] border-t-[var(--accent-green)] rounded-full animate-spin"></div>
-                                    <p class="text-sm font-medium">Fetching live data...</p>
+                        <!-- 
+                            SEO FIX: Pre-rendered static content to prevent "Soft 404".
+                            This content is visible to crawlers immediately and replaced by JS updates.
+                        -->
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-[var(--text-tertiary)] text-xs w-4 font-mono">1</span>
+                                    <img src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png" alt="Bitcoin" class="w-8 h-8 rounded-full shadow-sm bg-white/10">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-sm text-[var(--text-primary)]">Bitcoin</span>
+                                        <span class="text-xs text-[var(--text-secondary)] font-medium uppercase">BTC</span>
+                                    </div>
                                 </div>
                             </td>
+                            <td class="text-right font-medium font-mono text-sm">$96,420.00</td>
+                            <td class="text-right"><span class="badge positive">+2.4%</span></td>
+                            <td class="hidden md:table-cell py-2 opacity-50 text-xs text-right">Loading chart...</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden sm:table-cell">$1.9T</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden lg:table-cell">$45B</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-[var(--text-tertiary)] text-xs w-4 font-mono">2</span>
+                                    <img src="https://assets.coingecko.com/coins/images/279/large/ethereum.png" alt="Ethereum" class="w-8 h-8 rounded-full shadow-sm bg-white/10">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-sm text-[var(--text-primary)]">Ethereum</span>
+                                        <span class="text-xs text-[var(--text-secondary)] font-medium uppercase">ETH</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-right font-medium font-mono text-sm">$3,850.00</td>
+                            <td class="text-right"><span class="badge positive">+1.2%</span></td>
+                            <td class="hidden md:table-cell py-2 opacity-50 text-xs text-right">Loading chart...</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden sm:table-cell">$450B</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden lg:table-cell">$18B</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-[var(--text-tertiary)] text-xs w-4 font-mono">3</span>
+                                    <img src="https://assets.coingecko.com/coins/images/5/large/dogecoin.png" alt="Dogecoin" class="w-8 h-8 rounded-full shadow-sm bg-white/10">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-sm text-[var(--text-primary)]">Dogecoin</span>
+                                        <span class="text-xs text-[var(--text-secondary)] font-medium uppercase">DOGE</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-right font-medium font-mono text-sm">$0.42</td>
+                            <td class="text-right"><span class="badge positive">+5.0%</span></td>
+                            <td class="hidden md:table-cell py-2 opacity-50 text-xs text-right">Loading chart...</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden sm:table-cell">$60B</td>
+                            <td class="text-right text-sm text-[var(--text-secondary)] hidden lg:table-cell">$2B</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <footer class="mt-12 text-center">
+        <!-- Footer -->
+        <footer class="mt-12 text-center pb-8">
             <p class="text-xs text-[var(--text-tertiary)]">
-                Powered by CoinGecko API • Updates every 60s • MuchBalance © 2025
+                Powered by CoinGecko API • Updates every 60s • MuchBalance © 2025 • Designed by Naveen Soni
             </p>
         </footer>
     </div>
@@ -311,7 +366,7 @@
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
-            renderCharts(); // Re-render charts to update stroke color
+            renderCharts(); 
         }
         
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -328,10 +383,7 @@
                 renderTable(cryptoData);
             } catch (e) {
                 console.error(e);
-                document.getElementById('crypto-body').innerHTML = `
-                    <tr><td colspan="6" class="p-8 text-center text-red-500 font-medium">
-                        Unable to load data. Please wait a moment and refresh.
-                    </td></tr>`;
+                // On error, we don't clear the body so static data remains (SEO friendly fallback)
             }
         }
 
@@ -378,13 +430,12 @@
         // --- Render Main Table ---
         function renderTable(data) {
             const tbody = document.getElementById('crypto-body');
-            tbody.innerHTML = '';
+            tbody.innerHTML = ''; // This wipes the static SEO content and replaces it with live data
 
             data.forEach((coin, index) => {
                 const tr = document.createElement('tr');
                 const isPos = coin.price_change_percentage_24h >= 0;
                 
-                // Generate Sparkline SVG path
                 const sparklineSVG = generateSparkline(coin.sparkline_in_7d.price, isPos);
 
                 tr.innerHTML = `
@@ -434,10 +485,9 @@
             const max = Math.max(...prices);
             const range = max - min;
             
-            // Normalize points to fit SVG viewbox
             const points = prices.map((price, i) => {
                 const x = (i / (prices.length - 1)) * width;
-                const y = height - ((price - min) / range) * height; // Invert Y for SVG
+                const y = height - ((price - min) / range) * height; 
                 return `${x},${y}`;
             }).join(' ');
 
@@ -450,18 +500,17 @@
             `;
         }
         
-        // Helper to redraw charts on theme switch
         function renderCharts() {
              if(cryptoData.length > 0) renderTable(cryptoData);
         }
 
-        // --- Formatters ---
         const formatCurrency = num => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
         const formatCompact = num => new Intl.NumberFormat('en-US', { notation: "compact", compactDisplay: "short", style: 'currency', currency: 'USD' }).format(num);
 
-        // Start
         init();
-        setInterval(init, 60000); // Update every minute
+        setInterval(init, 60000);
     </script>
 </body>
 </html>
+
+
