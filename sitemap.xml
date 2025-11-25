@@ -13,6 +13,21 @@
   <priority>1.00</priority>
 </url>
 <url>
+  <loc>https://muchbalance.github.io/v2/index.html</loc>
+  <lastmod>2025-11-24T05:15:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://muchbalance.github.io/bitcoin/v2/index.html</loc>
+  <lastmod>2025-11-24T05:15:32+00:00</lastmod>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://muchbalance.github.io/market/index.html</loc>
+  <lastmod>2025-11-24T05:15:32+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
   <loc>https://muchbalance.github.io/bitcoin/index.html</loc>
   <lastmod>2022-12-13T05:15:32+00:00</lastmod>
   <priority>0.80</priority>
@@ -25,3 +40,4 @@
 
 
 </urlset>
+
