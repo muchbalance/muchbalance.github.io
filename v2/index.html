@@ -142,6 +142,9 @@
         .action-btn:hover { background: var(--bg-body); color: var(--text-main); }
         .action-btn.primary { background: var(--primary); color: white; }
         .action-btn.primary:hover { background: var(--primary-dark); transform: scale(1.05); }
+        
+        /* Clear Button Style */
+        .action-btn.clear:hover { color: var(--danger); background: rgba(220, 38, 38, 0.1); }
 
         .nav-actions { display: flex; gap: 0.5rem; }
         .icon-btn {
@@ -244,14 +247,15 @@
             box-shadow: var(--shadow-hover);
         }
 
-        /* DANCING DOGE GIF */
+        /* DANCING DOGE GIF (Bottom) */
+        .footer-doge {
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
         .dancing-doge {
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
             width: 80px;
-            opacity: 0.8;
-            pointer-events: none;
+            opacity: 0.9;
         }
 
         .balance-label { 
@@ -268,7 +272,7 @@
         }
 
         .balance-val { 
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(1.8rem, 4vw, 3rem); /* REDUCED SIZE */
             font-weight: 800; 
             color: var(--text-main); 
             line-height: 1.1;
@@ -277,7 +281,7 @@
             letter-spacing: -0.03em;
         }
         
-        .balance-fiat { font-size: 1.5rem; color: var(--text-muted); font-weight: 500; }
+        .balance-fiat { font-size: 1.25rem; color: var(--text-muted); font-weight: 500; }
 
         /* METRICS GRID */
         .metrics-grid {
@@ -297,8 +301,8 @@
         .metric-card:hover { transform: translateY(-2px); border-color: var(--primary); }
 
         .metric-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: block; }
-        .metric-val { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; display: block; word-break: break-word; }
-        .metric-sub { font-size: 0.9rem; color: var(--text-muted); opacity: 0.8; }
+        .metric-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; display: block; word-break: break-word; } /* REDUCED SIZE */
+        .metric-sub { font-size: 0.85rem; color: var(--text-muted); opacity: 0.8; }
 
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
@@ -359,8 +363,6 @@
             
             .hero-img { width: 180px; }
             .hero h1 { font-size: 2.25rem; }
-            
-            .dancing-doge { width: 60px; right: 10px; bottom: 10px; }
         }
     </style>
 </head>
@@ -374,13 +376,14 @@
 
         <div class="search-container">
             <div class="search-wrapper">
-                <input type="text" id="search-input" class="search-input" placeholder="Paste Doge address (D...) to search" autocomplete="off">
+                <input type="text" id="search-input" class="search-input" placeholder="Dogecoin address" autocomplete="off">
                 <div class="search-actions">
                     <button class="action-btn" onclick="openScanner()" title="Scan QR Code">
                         <i class="fas fa-qrcode"></i>
                     </button>
-                    <button class="action-btn primary" onclick="triggerSearch()" title="Search">
-                        <i class="fas fa-arrow-right"></i>
+                    <!-- Clear (X) button -->
+                    <button class="action-btn clear" onclick="clearInput()" title="Clear Input">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
@@ -436,14 +439,11 @@
         <!-- Result View -->
         <div id="result-area">
             
-            <!-- Balance Card with Dancing Doge -->
+            <!-- Balance Card -->
             <div class="balance-card-wrapper">
                 <span class="balance-label">Current Balance</span>
                 <div class="balance-val" id="balance-display">0.00</div>
                 <div class="balance-fiat">≈ $<span id="usd-balance">0.00</span></div>
-                
-                <!-- Dancing Doge GIF (Celebration) -->
-                <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dd.gif" class="dancing-doge" alt="Dancing Doge">
             </div>
 
             <!-- Metrics Grid -->
@@ -465,7 +465,12 @@
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 4rem; font-size: 0.875rem; color: var(--text-muted); opacity: 0.7;">
+            <!-- Footer Doge -->
+            <div class="footer-doge">
+                <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dd.gif" class="dancing-doge" alt="Dancing Doge">
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 3rem; font-size: 0.875rem; color: var(--text-muted); opacity: 0.7;">
                 Data sourced from BlockCypher & CoinGecko
             </div>
         </div>
@@ -497,7 +502,7 @@
                 let val = $(this).val().trim();
                 
                 if(val.length === 0) {
-                    $('#result-area').fadeOut(200, () => $('#hero-view').fadeIn(200));
+                    clearInput(); 
                     return;
                 }
 
@@ -507,11 +512,14 @@
                     }
                 }, 600);
             });
-
-            $('#search-input').on('keypress', function(e) {
-                if(e.which == 13) triggerSearch();
-            });
         });
+
+        // Clear Input Function
+        function clearInput() {
+            $('#search-input').val('');
+            $('#result-area').fadeOut(200, () => $('#hero-view').fadeIn(200));
+            lastScanned = ""; // Reset state to allow re-search
+        }
 
         function toggleTheme() {
             const html = document.documentElement;
