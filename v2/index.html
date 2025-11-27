@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The fastest Dogecoin Balance Checker. View wallet balances, transaction history, and live DOGE prices instantly. No login required.">
     <meta name="keywords" content="Dogecoin, Dogecoin Balance Checker, Check Doge Wallet, Dogecoin Explorer, Live Doge Price, Dogecoin Transactions, DOGE to USD, Dogecoin Blockchain, Much Balance">
     <title>MuchBalance V2 | Dogecoin Explorer</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/f32.ico" type="image/x-icon">
+    
+    <!-- Favicons -->
+    <link rel="icon" href="https://muchbalance.github.io/f32.ico" sizes="32x32">
+    <link rel="icon" href="https://muchbalance.github.io/f64.ico" sizes="64x64">
+    <link rel="apple-touch-icon" href="https://muchbalance.github.io/dogecoin-300.png">
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -28,7 +33,8 @@
             /* Light Theme */
             --bg-body: #FAFAFA;
             --bg-gradient: radial-gradient(circle at top center, #fffbeb 0%, #FAFAFA 60%);
-            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-footer: #F3F4F6;
             --text-main: #111827;
             --text-muted: #6B7280;
             --border: rgba(229, 231, 235, 0.8);
@@ -43,7 +49,8 @@
         [data-theme="dark"] {
             --bg-body: #0f1115;
             --bg-gradient: radial-gradient(circle at top center, #1c1806 0%, #0f1115 60%);
-            --bg-card: rgba(26, 28, 35, 0.7);
+            --bg-card: rgba(26, 28, 35, 0.8);
+            --bg-footer: #161b22;
             --text-main: #F9FAFB;
             --text-muted: #9CA3AF;
             --border: rgba(255, 255, 255, 0.08);
@@ -72,7 +79,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.25rem 5%;
-            background-color: rgba(255, 255, 255, 0.05); /* Very transparent */
+            background-color: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             position: sticky;
@@ -143,8 +150,6 @@
         .action-btn:hover { background: var(--bg-body); color: var(--text-main); }
         .action-btn.primary { background: var(--primary); color: white; }
         .action-btn.primary:hover { background: var(--primary-dark); transform: scale(1.05); }
-        
-        /* Clear Button Style */
         .action-btn.clear:hover { color: var(--danger); background: rgba(220, 38, 38, 0.1); }
 
         .nav-actions { display: flex; gap: 0.5rem; }
@@ -190,11 +195,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary);
-        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--primary); }
 
         .stat-icon {
             width: 48px; height: 48px;
@@ -217,7 +218,6 @@
             position: relative;
         }
 
-        /* Floating Animation */
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(2deg); }
@@ -233,23 +233,77 @@
         .hero h1 { font-weight: 800; font-size: 3rem; margin: 0 0 1rem; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
-        /* SEO CONTENT (New) */
-        .seo-section {
+        /* CONTENT SECTIONS */
+        .content-section {
             margin-top: 5rem;
-            text-align: left;
             border-top: 1px solid var(--border);
             padding-top: 3rem;
-            opacity: 0.9;
         }
-        
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        /* SEO GRID */
         .seo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
+            margin-bottom: 4rem;
         }
         
         .seo-block h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main); }
         .seo-block p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+
+        /* FEATURES ROW */
+        .features-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+        
+        .feature-item { flex: 1; padding: 1rem; }
+        .feature-icon { font-size: 2rem; color: var(--primary); margin-bottom: 1rem; }
+        .feature-title { font-weight: 700; margin-bottom: 0.5rem; }
+        .feature-desc { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* FOOTER */
+        .footer {
+            background-color: var(--bg-footer);
+            border-top: 1px solid var(--border);
+            padding: 3rem 1.5rem;
+            margin-top: auto; /* Pushes footer to bottom */
+        }
+        
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .footer-col h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
+        .footer-col ul { list-style: none; padding: 0; margin: 0; }
+        .footer-col li { margin-bottom: 0.5rem; }
+        .footer-col a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; transition: color 0.2s; }
+        .footer-col a:hover { color: var(--primary); }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
 
         /* RESULTS AREA */
         #result-area { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -266,104 +320,46 @@
             box-shadow: var(--shadow-hover);
         }
 
-        /* DANCING DOGE GIF (Bottom) */
-        .footer-doge {
-            text-align: center;
-            margin-top: 3rem;
-            margin-bottom: 1rem;
-        }
-        .dancing-doge {
-            width: 80px;
-            opacity: 0.9;
-        }
+        .footer-doge { text-align: center; margin-top: 3rem; margin-bottom: 1rem; }
+        .dancing-doge { width: 80px; opacity: 0.9; }
 
         .balance-label { 
-            display: inline-block;
-            padding: 6px 16px;
-            background: var(--primary-glow);
-            color: var(--primary);
-            border-radius: 20px;
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            letter-spacing: 0.1em; 
-            margin-bottom: 1.5rem; 
+            display: inline-block; padding: 6px 16px;
+            background: var(--primary-glow); color: var(--primary);
+            border-radius: 20px; font-size: 0.85rem; font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; 
         }
 
         .balance-val { 
-            font-size: clamp(1.8rem, 4vw, 3rem); /* REDUCED SIZE */
-            font-weight: 800; 
-            color: var(--text-main); 
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
-            word-break: break-all;
-            letter-spacing: -0.03em;
+            font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; 
+            color: var(--text-main); line-height: 1.1; margin-bottom: 0.5rem;
+            word-break: break-all; letter-spacing: -0.03em;
         }
-        
         .balance-fiat { font-size: 1.25rem; color: var(--text-muted); font-weight: 500; }
 
-        /* METRICS GRID */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 
         .metric-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            text-align: center;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 1.5rem; padding: 1.5rem; text-align: center;
             transition: transform 0.2s;
         }
         .metric-card:hover { transform: translateY(-2px); border-color: var(--primary); }
 
         .metric-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: block; }
-        .metric-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; display: block; word-break: break-word; } /* REDUCED SIZE */
+        .metric-val { font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem; display: block; word-break: break-word; }
         .metric-sub { font-size: 0.85rem; color: var(--text-muted); opacity: 0.8; }
 
         .text-green { color: var(--success); }
         .text-red { color: var(--danger); }
 
-        /* QR MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: var(--bg-body);
-            padding: 2rem;
-            border-radius: 1.5rem;
-            width: 90%; max-width: 450px;
-            text-align: center;
-            border: 1px solid var(--border);
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        .close-modal {
-            position: absolute; right: 1.5rem; top: 1.5rem;
-            font-size: 1.5rem; cursor: pointer; color: var(--text-muted);
-        }
+        /* MODAL & LOADER */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--bg-body); padding: 2rem; border-radius: 1.5rem; width: 90%; max-width: 450px; text-align: center; border: 1px solid var(--border); position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .close-modal { position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
         #reader { width: 100%; border-radius: 1rem; overflow: hidden; margin-top: 1.5rem; }
 
-        /* LOADER */
-        .loader {
-            width: 50px; height: 50px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 5rem auto;
-            display: none;
-        }
+        .loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 5rem auto; display: none; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -374,16 +370,11 @@
             .navbar { flex-wrap: wrap; padding: 1rem; gap: 1rem; }
             .search-container { order: 3; width: 100%; margin: 0; max-width: none; }
             .nav-actions { margin-left: auto; }
-            
-            .stats-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2rem; }
+            .stats-grid, .metrics-grid, .features-row, .seo-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .features-row { flex-direction: column; }
             .stat-card { padding: 1rem; }
-            
-            .metrics-grid { grid-template-columns: 1fr; gap: 1rem; }
-            
-            .hero-img { width: 180px; }
             .hero h1 { font-size: 2.25rem; }
-            
-            .seo-grid { grid-template-columns: 1fr; }
+            .footer-content { flex-direction: column; gap: 2rem; }
         }
     </style>
 </head>
@@ -391,7 +382,7 @@
 
     <nav class="navbar">
         <a href="#" class="logo" onclick="location.reload()">
-            <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dogecoin-300.png" alt="Logo">
+            <img src="https://muchbalance.github.io/dogecoin-300.png" alt="Logo">
             MuchBalance V2
         </a>
 
@@ -402,7 +393,6 @@
                     <button class="action-btn" onclick="openScanner()" title="Scan QR Code">
                         <i class="fas fa-qrcode"></i>
                     </button>
-                    <!-- Clear (X) button -->
                     <button class="action-btn clear" onclick="clearInput()" title="Clear Input">
                         <i class="fas fa-times"></i>
                     </button>
@@ -449,15 +439,37 @@
 
         <div class="loader" id="loader"></div>
 
-        <!-- Hero View: Animated Rocket & SEO Content -->
+        <!-- Hero View: Animated Rocket & Content -->
         <div class="hero" id="hero-view">
             <!-- Rocket Doge Animation -->
-            <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dtm.png" class="hero-img" alt="Rocket Doge">
+            <img src="https://muchbalance.github.io/dtm.png" class="hero-img" alt="Rocket Doge">
             <h1>Much Wow. Such Balance.</h1>
             <p>Enter a Dogecoin address or scan a QR code to view real-time blockchain data.</p>
 
+            <!-- Features Row -->
+            <div class="content-section">
+                <div class="features-row">
+                    <div class="feature-item">
+                        <i class="fas fa-bolt feature-icon"></i>
+                        <div class="feature-title">Lightning Fast</div>
+                        <div class="feature-desc">Instant access to blockchain data. No account, no login, no hassle.</div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-user-shield feature-icon"></i>
+                        <div class="feature-title">100% Private</div>
+                        <div class="feature-desc">Client-side only. We don't store your IP or wallet addresses.</div>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <div class="feature-title">Mobile Ready</div>
+                        <div class="feature-desc">Scan QR codes directly from your camera for easy mobile payments check.</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- SEO Content Section -->
-            <div class="seo-section">
+            <div class="content-section">
+                <h2 class="section-title">Why MuchBalance?</h2>
                 <div class="seo-grid">
                     <div class="seo-block">
                         <h3>What is Dogecoin (DOGE)?</h3>
@@ -472,16 +484,16 @@
                         <p>Stay updated with the real-time Dogecoin price in USD, current blockchain height, and network transaction volume. Our explorer fetches data directly from the blockchain for 100% accuracy.</p>
                     </div>
                     <div class="seo-block">
-                        <h3>Privacy & Security</h3>
-                        <p>Your privacy matters. MuchBalance runs entirely in your browser. We do not store your wallet addresses, IP, or usage data. It's a safe, read-only tool to view public blockchain information.</p>
+                        <h3>Supported Wallets</h3>
+                        <p>MuchBalance supports all standard Dogecoin addresses starting with 'D'. Compatible with major wallets including Dogecoin Core, Ledger, Trezor, Trust Wallet, Exodus, and MetaMask (via bridge).</p>
                     </div>
                     <div class="seo-block">
-                        <h3>QR Code Scanner</h3>
-                        <p>Easily scan Dogecoin QR codes using your device's camera. Our built-in scanner automatically detects wallet addresses, making it effortless to check balances on mobile devices.</p>
+                        <h3>FAQs</h3>
+                        <p><strong>Is it free?</strong> Yes, 100% free.<br><strong>Do you store data?</strong> No, never.<br><strong>Can I recover lost keys?</strong> No, this is a read-only tool.</p>
                     </div>
                     <div class="seo-block">
-                        <h3>Transaction History</h3>
-                        <p>Get a comprehensive overview of a wallet's activity. View total DOGE received and sent over the lifetime of the address to track payments and donations transparently.</p>
+                        <h3>Disclaimer</h3>
+                        <p>This tool is a read-only blockchain explorer. We cannot access your private keys, move funds, or recover lost wallets. Always verify data with official network nodes before making large transactions.</p>
                     </div>
                 </div>
             </div>
@@ -489,7 +501,6 @@
 
         <!-- Result View -->
         <div id="result-area">
-            
             <!-- Balance Card -->
             <div class="balance-card-wrapper">
                 <span class="balance-label">Current Balance</span>
@@ -518,7 +529,7 @@
             
             <!-- Footer Doge -->
             <div class="footer-doge">
-                <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dd.gif" class="dancing-doge" alt="Dancing Doge">
+                <img src="https://muchbalance.github.io/dd.gif" class="dancing-doge" alt="Dancing Doge">
             </div>
             
             <div style="text-align: center; margin-bottom: 3rem; font-size: 0.875rem; color: var(--text-muted); opacity: 0.7;">
@@ -526,6 +537,36 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h4>MuchBalance V2</h4>
+                <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 250px;">
+                    A simple, elegant, and private Dogecoin blockchain explorer for the community.
+                </p>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://dogecoin.com" target="_blank">Dogecoin.com</a></li>
+                    <li><a href="https://reddit.com/r/dogecoin" target="_blank">r/Dogecoin</a></li>
+                    <li><a href="https://github.com/dogecoin/dogecoin" target="_blank">Dogecoin Core</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Donate</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Support development:</p>
+                <div style="background: var(--bg-card); padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 0.8rem; word-break: break-all;">
+                    DRRSueeU3DWNPFpkmU6hsq6Ur8fwRYAJ3o
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 MuchBalance. Developed by <a href="https://github.com/naveen-6802" style="color: var(--primary); text-decoration: none;">@naveen6802</a>.
+        </div>
+    </footer>
 
     <!-- QR Modal -->
     <div id="qr-modal" class="modal">
@@ -569,7 +610,7 @@
         function clearInput() {
             $('#search-input').val('');
             $('#result-area').fadeOut(200, () => $('#hero-view').fadeIn(200));
-            lastScanned = ""; // Reset state to allow re-search
+            lastScanned = ""; 
         }
 
         function toggleTheme() {
@@ -630,7 +671,6 @@
                     let sent = data.total_sent / 100000000;
                     let txs = data.n_tx;
 
-                    // Formatting
                     const fmt = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 4});
                     const fmtUSD = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
@@ -657,7 +697,6 @@
             });
         }
 
-        // QR Scanner
         function openScanner() {
             $('#qr-modal').css('display', 'flex');
             
