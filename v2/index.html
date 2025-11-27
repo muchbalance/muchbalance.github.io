@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Dogecoin, Dogecoin Balance Checker, Check Doge Wallet, Dogecoin Explorer, Live Doge Price, Dogecoin Transactions, DOGE to USD, Dogecoin Blockchain, Much Balance">
     <title>MuchBalance V2 | Dogecoin Explorer</title>
     <link rel="icon" href="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/f32.ico" type="image/x-icon">
     
@@ -232,6 +233,24 @@
         .hero h1 { font-weight: 800; font-size: 3rem; margin: 0 0 1rem; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
+        /* SEO CONTENT (New) */
+        .seo-section {
+            margin-top: 5rem;
+            text-align: left;
+            border-top: 1px solid var(--border);
+            padding-top: 3rem;
+            opacity: 0.9;
+        }
+        
+        .seo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .seo-block h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main); }
+        .seo-block p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+
         /* RESULTS AREA */
         #result-area { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 
@@ -363,6 +382,8 @@
             
             .hero-img { width: 180px; }
             .hero h1 { font-size: 2.25rem; }
+            
+            .seo-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -428,12 +449,30 @@
 
         <div class="loader" id="loader"></div>
 
-        <!-- Hero View: Animated Rocket -->
+        <!-- Hero View: Animated Rocket & SEO Content -->
         <div class="hero" id="hero-view">
             <!-- Rocket Doge Animation -->
             <img src="https://raw.githubusercontent.com/muchbalance/muchbalance.github.io/master/dtm.png" class="hero-img" alt="Rocket Doge">
             <h1>Much Wow. Such Balance.</h1>
             <p>Enter a Dogecoin address or scan a QR code to view real-time blockchain data.</p>
+
+            <!-- SEO Content Section -->
+            <div class="seo-section">
+                <div class="seo-grid">
+                    <div class="seo-block">
+                        <h3>What is Dogecoin (DOGE)?</h3>
+                        <p>Dogecoin is a peer-to-peer, open-source cryptocurrency featuring the likeness of the Shiba Inu dog. Originally created as a meme, it has grown into a widely used digital currency for tipping and payments.</p>
+                    </div>
+                    <div class="seo-block">
+                        <h3>Check Dogecoin Wallet Balance</h3>
+                        <p>MuchBalance provides a secure way to check any Dogecoin address balance instantly. Just paste the public address (starting with 'D') to view total holdings, received amounts, and transaction counts without logging in.</p>
+                    </div>
+                    <div class="seo-block">
+                        <h3>Live Doge Price & Stats</h3>
+                        <p>Stay updated with the real-time Dogecoin price in USD, current blockchain height, and network transaction volume. Our explorer fetches data directly from the blockchain for 100% accuracy.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Result View -->
