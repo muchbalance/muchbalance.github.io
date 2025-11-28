@@ -32,10 +32,9 @@
             
             /* Light Theme */
             --bg-body: #FAFAFA;
-            /* Restored Gradient Background */
             --bg-gradient: radial-gradient(circle at top center, #fffbeb 0%, #FAFAFA 60%);
             --bg-card: rgba(255, 255, 255, 0.9);
-            --bg-footer: rgba(243, 244, 246, 0.8); /* Slight transparency */
+            --bg-footer: rgba(243, 244, 246, 0.8);
             --text-main: #111827;
             --text-muted: #6B7280;
             --border: rgba(229, 231, 235, 0.8);
@@ -55,7 +54,6 @@
 
         [data-theme="dark"] {
             --bg-body: #0f1115;
-            /* Restored Dark Gradient */
             --bg-gradient: radial-gradient(circle at top center, #1c1806 0%, #0f1115 60%);
             --bg-card: rgba(26, 28, 35, 0.8);
             --bg-footer: rgba(22, 27, 34, 0.8);
@@ -92,7 +90,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.25rem 5%;
-            background-color: rgba(255, 255, 255, 0.05); /* Increased transparency for gradient effect */
+            background-color: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             position: sticky;
@@ -227,27 +225,10 @@
         .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
         .stat-val { font-size: 1.1rem; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* HERO - ANIMATED ROCKET DOGE */
-        .hero {
-            text-align: center;
-            margin-top: 3rem;
-            animation: fadeIn 0.8s ease;
-            position: relative;
-        }
-
-        /* Floating Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-        }
-        
-        .hero-img { 
-            width: 220px; 
-            margin-bottom: 2rem; 
-            animation: float 4s ease-in-out infinite; 
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
-        }
-
+        /* HERO */
+        .hero { text-align: center; margin-top: 3rem; animation: fadeIn 0.8s ease; position: relative; }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(2deg); } }
+        .hero-img { width: 220px; margin-bottom: 2rem; animation: float 4s ease-in-out infinite; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15)); }
         .hero h1 { font-weight: 800; font-size: 3rem; margin: 0 0 1rem; letter-spacing: -0.03em; background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero p { color: var(--text-muted); font-size: 1.15rem; max-width: 500px; margin: 0 auto; line-height: 1.6; }
 
@@ -263,181 +244,41 @@
         .seo-block h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main); }
         .seo-block p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
 
-        /* --- NEW RESULT UI (Wallet Card) --- */
+        /* RESULT CARD */
         #result-area { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-
-        .wallet-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            box-shadow: var(--shadow-card);
-            overflow: hidden;
-            margin-bottom: 3rem;
-            backdrop-filter: blur(10px);
-        }
-
-        /* Card Header */
-        .wallet-header {
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .wallet-identity {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            overflow: hidden;
-        }
-
-        .wallet-icon-box {
-            width: 48px; height: 48px;
-            background: var(--icon-bg-wallet);
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-            color: #000;
-            flex-shrink: 0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .wallet-info {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .wallet-label {
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 2px;
-        }
-
-        .wallet-address {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'Courier New', monospace; /* Tech feel */
-        }
-
-        .btn-qr {
-            padding: 0.6rem 1.2rem;
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex; align-items: center; gap: 0.5rem;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
+        .wallet-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 1.5rem; box-shadow: var(--shadow-card); overflow: hidden; margin-bottom: 3rem; backdrop-filter: blur(10px); }
+        
+        .wallet-header { padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+        .wallet-identity { display: flex; align-items: center; gap: 1rem; overflow: hidden; }
+        .wallet-icon-box { width: 48px; height: 48px; background: var(--icon-bg-wallet); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .wallet-info { display: flex; flex-direction: column; overflow: hidden; }
+        .wallet-label { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+        .wallet-address { font-size: 1rem; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Courier New', monospace; }
+        
+        .btn-qr { padding: 0.6rem 1.2rem; border: 1px solid var(--border); border-radius: 0.75rem; background: var(--bg-body); color: var(--text-main); font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s; }
         .btn-qr:hover { background: var(--border); transform: translateY(-1px); }
 
-        /* Card Body (Balance) */
-        .wallet-body {
-            padding: 4rem 1rem;
-            text-align: center;
-        }
-
-        .status-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 8px 20px;
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            font-size: 0.75rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--text-main);
-            margin-bottom: 2rem;
-            background: var(--bg-body);
-            box-shadow: var(--shadow-sm);
-        }
+        .wallet-body { padding: 4rem 1rem; text-align: center; }
+        .status-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border: 1px solid var(--border); border-radius: 30px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-main); margin-bottom: 2rem; background: var(--bg-body); box-shadow: var(--shadow-sm); }
         .status-icon { width: 8px; height: 8px; background: var(--primary); transform: rotate(45deg); box-shadow: 0 0 8px var(--primary); }
+        .balance-amount { font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; color: var(--text-main); line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+        .currency-label { font-size: 1.5rem; font-weight: 300; color: var(--primary); letter-spacing: 0.2em; margin-bottom: 1rem; }
+        .fiat-value { font-size: 1.25rem; color: var(--text-muted); font-weight: 500; opacity: 0.8; }
 
-        .balance-amount {
-            font-size: clamp(3rem, 6vw, 5rem);
-            font-weight: 800;
-            color: var(--text-main);
-            line-height: 1;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.75rem;
-        }
-
-        .currency-label {
-            font-size: 1.5rem;
-            font-weight: 300;
-            color: var(--primary);
-            letter-spacing: 0.2em;
-            margin-bottom: 1rem;
-        }
-
-        .fiat-value {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            opacity: 0.8;
-        }
-
-        /* Card Footer (Grid) */
-        .wallet-footer {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            border-top: 1px solid var(--border);
-            background: rgba(0,0,0,0.01);
-        }
-
-        .wf-item {
-            padding: 2.5rem 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border-right: 1px solid var(--border);
-            transition: background 0.2s;
-        }
+        .wallet-footer { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); background: rgba(0,0,0,0.01); }
+        .wf-item { padding: 2.5rem 1rem; display: flex; flex-direction: column; align-items: center; text-align: center; border-right: 1px solid var(--border); transition: background 0.2s; }
         .wf-item:last-child { border-right: none; }
         .wf-item:hover { background: rgba(0,0,0,0.02); }
-
-        .wf-icon-circle {
-            width: 48px; height: 48px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
+        .wf-icon-circle { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 1rem; }
         .icon-rec { background: var(--icon-bg-receive); color: var(--icon-color-receive); }
         .icon-sent { background: var(--icon-bg-sent); color: var(--icon-color-sent); }
         .icon-tx { background: var(--icon-bg-tx); color: var(--icon-color-tx); }
-
-        .wf-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        .wf-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            word-break: break-word;
-        }
+        .wf-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .wf-value { font-size: 1.25rem; font-weight: 700; color: var(--text-main); word-break: break-word; }
 
         /* FOOTER & EXTRAS */
         .footer-doge { text-align: center; margin-top: 2rem; margin-bottom: 1rem; }
         .dancing-doge { width: 70px; opacity: 0.9; }
-        
         .main-footer { margin-top: auto; border-top: 1px solid var(--border); background: var(--bg-footer); padding: 4rem 1.5rem 2rem; }
         .footer-inner { max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 3rem; justify-content: space-between; }
         .footer-col h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
@@ -445,14 +286,12 @@
         .footer-link:hover { color: var(--primary); }
         .copyright { text-align: center; padding-top: 2rem; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem; }
 
-        /* MODAL */
+        /* MODAL & LOADER */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); align-items: center; justify-content: center; }
         .modal-content { background-color: var(--bg-card); padding: 2rem; border-radius: 1.5rem; width: 90%; max-width: 450px; text-align: center; border: 1px solid var(--border); position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
         .close-modal { position: absolute; right: 1.5rem; top: 1.5rem; cursor: pointer; color: var(--text-muted); font-size: 1.5rem; }
         #qr-image { width: 200px; height: 200px; margin: 1rem auto; display: block; border-radius: 10px; }
         #reader { width: 100%; border-radius: 1rem; overflow: hidden; margin-top: 1.5rem; }
-
-        /* LOADER */
         .loader { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 5rem auto; display: none; }
 
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -745,23 +584,32 @@
             document.documentElement.setAttribute('data-theme', saved);
         }
 
+        // Updated Stats Fetcher (Blockchair First)
         function fetchNetworkStats() {
+            // Price
             $.get("https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd", function(data){
                 if(data.dogecoin) {
                     currentPrice = data.dogecoin.usd;
                     $('#net-price').text("$" + currentPrice);
                 }
             });
-            $.get("https://api.blockcypher.com/v1/doge/main", function(data){
-                if(data.height) $('#net-blocks').text(data.height.toLocaleString());
-            });
+
+            // Network Stats from Blockchair (Much more reliable for stats)
             $.get("https://api.blockchair.com/dogecoin/stats", function(data){
-                if(data && data.data && data.data.transactions_24h) {
+                if(data && data.data) {
+                    $('#net-blocks').text(data.data.blocks.toLocaleString());
                     $('#net-24h').text(data.data.transactions_24h.toLocaleString());
-                } else { $('#net-24h').text("-"); }
-            }).fail(() => $('#net-24h').text("-"));
+                }
+            }).fail(function() {
+                // Fallback to BlockCypher only if Blockchair fails
+                $.get("https://api.blockcypher.com/v1/doge/main", function(data){
+                    if(data.height) $('#net-blocks').text(data.height.toLocaleString());
+                });
+                $('#net-24h').text("-");
+            });
         }
 
+        // Updated Search (BlockCypher -> Fallback Blockchair)
         function triggerSearch(address) {
             if(address === currentAddr && $('#result-area').is(':visible')) return;
             currentAddr = address;
@@ -772,41 +620,69 @@
 
             $('#display-address').text(address);
 
-            var url = "https://api.blockcypher.com/v1/doge/main/addrs/" + address + "/balance";
-
+            // Primary: BlockCypher
             $.ajax({
-                url: url,
+                url: "https://api.blockcypher.com/v1/doge/main/addrs/" + address + "/balance",
                 type: "GET",
                 success: function(data) {
-                    $('#loader').hide();
-                    
-                    let bal = data.balance / 100000000;
-                    let rec = data.total_received / 100000000;
-                    let sent = data.total_sent / 100000000;
-                    let txs = data.n_tx;
-
-                    const fmt = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 3});
-                    const fmtUSD = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
-                    $('#balance-display').text(fmt(bal));
-                    $('#received-display').text(fmt(rec));
-                    $('#spent-display').text(fmt(sent));
-                    $('#tx-count-display').text(txs.toLocaleString());
-
-                    if(currentPrice > 0) {
-                        $('#usd-balance').text("$" + fmtUSD(bal * currentPrice));
-                    }
-
-                    $('#result-area').fadeIn(300);
+                    renderData({
+                        balance: data.balance / 100000000,
+                        received: data.total_received / 100000000,
+                        sent: data.total_sent / 100000000,
+                        txs: data.n_tx
+                    });
                 },
                 error: function(err) {
-                    $('#loader').hide();
-                    if(err.status === 404) alert("Address not found.");
-                    else if(err.status === 429) alert("Rate Limit. Wait 60s.");
-                    else alert("Error fetching data.");
-                    $('#hero-view').show();
+                    console.log("BlockCypher failed, trying Blockchair...");
+                    // Fallback: Blockchair
+                    $.ajax({
+                        url: "https://api.blockchair.com/dogecoin/dashboards/address/" + address,
+                        type: "GET",
+                        success: function(resp) {
+                            if(resp.data && resp.data[address]) {
+                                let d = resp.data[address].address;
+                                renderData({
+                                    balance: d.balance / 100000000,
+                                    received: d.received / 100000000,
+                                    sent: d.spent / 100000000,
+                                    txs: d.transaction_count
+                                });
+                            } else {
+                                showError();
+                            }
+                        },
+                        error: function() {
+                            showError();
+                        }
+                    });
                 }
             });
+        }
+
+        function renderData(d) {
+            $('#loader').hide();
+            
+            const fmt = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 3});
+            const fmtUSD = (num) => num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            $('#balance-display').text(fmt(d.balance));
+            $('#received-display').text(fmt(d.received));
+            $('#spent-display').text(fmt(d.sent));
+            $('#tx-count-display').text(d.txs.toLocaleString());
+
+            if(currentPrice > 0) {
+                $('#usd-balance').text("$" + fmtUSD(d.balance * currentPrice));
+            } else {
+                $('#usd-balance').text("$0.00");
+            }
+
+            $('#result-area').fadeIn(300);
+        }
+
+        function showError() {
+            $('#loader').hide();
+            alert("Could not fetch address details. Please check the address or try again later.");
+            $('#hero-view').show();
         }
 
         function showAddressQR() {
