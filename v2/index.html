@@ -380,36 +380,56 @@
             padding: 4px 12px;
             border-radius: 20px;
         }
+        
+        /* Updated Reset Button Style */
         .conv-reset-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 12px 0; /* Taller padding */
-            border-radius: 12px; /* Smoother corners */
+            background: rgba(220, 38, 38, 0.08); /* Light Red */
+            color: var(--danger);
+            border: none; /* No border */
+            padding: 12px 0;
+            border-radius: 12px;
             font-size: 0.95rem;
             cursor: pointer;
             margin-top: 2rem;
             transition: all 0.2s;
-            width: 100%; /* Full width */
+            width: 100%;
             display: block;
             font-weight: 600;
         }
         
-        /* Updated Hover Style for Reset Button */
         .conv-reset-btn:hover { 
-            background: rgba(220, 38, 38, 0.1); 
+            background: rgba(220, 38, 38, 0.18); /* More Red on hover */
             color: var(--danger); 
-            border-color: var(--danger); 
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* MOBILE HEADER & LAYOUT OPTIMIZATION */
         @media (max-width: 700px) {
-            .navbar { flex-wrap: wrap; gap: 1rem; }
-            .search-container { order: 3; width: 100%; margin: 0; max-width: none; }
-            .nav-actions { margin-left: auto; }
+            .navbar { 
+                flex-wrap: wrap; 
+                gap: 0.5rem; /* Tighter gap */
+                padding: 0.75rem 1rem; /* Compact padding */
+            }
+            .logo { 
+                font-size: 1.1rem; 
+                flex: 1; /* Takes remaining space left */
+                order: 1;
+            }
+            .nav-actions { 
+                margin-left: auto; 
+                gap: 0.25rem; /* Tighter icon spacing */
+                order: 2;
+            }
+            .search-container { 
+                order: 3; 
+                width: 100%; 
+                margin: 0.5rem 0 0 0; 
+                max-width: none; 
+            }
+            
             .stats-grid, .features-row, .seo-grid { grid-template-columns: 1fr; gap: 1rem; }
             .features-row { flex-direction: column; }
             .wallet-footer { grid-template-columns: 1fr; }
