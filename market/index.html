@@ -369,15 +369,8 @@
                 renderHero(cryptoData);
                 renderTable(cryptoData);
             } catch (e) {
-                console.error(e);
-                // Notification for market data failure
-                const heroSection = document.getElementById('hero-section');
-                if (heroSection) {
-                    heroSection.innerHTML = `<div class="col-span-3 text-center p-4 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                        Unable to load live market data (CoinGecko API Limit). Showing cached/static data.
-                    </div>`;
-                    heroSection.classList.remove('hidden');
-                }
+                console.error("CoinGecko rate limit hit, showing static data instead.");
+                // Error swallowed to prevent UI disruption as requested
             }
         }
         
