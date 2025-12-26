@@ -1,1 +1,815 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuchBalance Wallet | Dogecoin Explorer</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="MuchBalance Wallet is a free, secure, client-side Dogecoin explorer. Check DOGE wallet balances, live prices, charts, and transaction history instantly without login.">
+    <meta name="keywords" content="Dogecoin, DOGE, Wallet, Explorer, Crypto, Cryptocurrency, Blockchain, Live Price, Doge Balance Checker">
+    <meta name="author" content="MuchBalance">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://muchbalance.github.io/wallet">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://muchbalance.github.io/wallet">
+    <meta property="og:title" content="MuchBalance Wallet | Dogecoin Explorer">
+    <meta property="og:description" content="Check DOGE wallet balances, live prices, and transaction history instantly.">
+    <meta property="og:image" content="https://cryptologos.cc/logos/dogecoin-doge-logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://muchbalance.github.io/wallet">
+    <meta property="twitter:title" content="MuchBalance Wallet | Dogecoin Explorer">
+    <meta property="twitter:description" content="Check DOGE wallet balances, live prices, and transaction history instantly.">
+    <meta property="twitter:image" content="https://cryptologos.cc/logos/dogecoin-doge-logo.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        doge: {
+                            DEFAULT: '#CB9800',
+                            light: '#E1B303',
+                            dark: '#A37900',
+                            bg: '#1a1a1a',
+                            card: '#242424',
+                            border: '#333333'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        comic: ['Comic Neue', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .doge-font {
+            font-family: 'Comic Neue', cursive;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #333; 
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #444; 
+        }
+        
+        /* Transitions for view switching */
+        .view-transition {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .hidden-view {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Super Smooth Theme Transition */
+        .switching-theme, 
+        .switching-theme *, 
+        .switching-theme *::before, 
+        .switching-theme *::after {
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        fill 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                        stroke 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition-delay: 0s !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-[#121212] text-gray-900 dark:text-gray-100 antialiased selection:bg-doge selection:text-white h-screen overflow-hidden">
+
+    <!-- LOGIN VIEW -->
+    <div id="login-view" class="h-full w-full flex flex-col items-center justify-center p-4 relative z-50 bg-gray-50 dark:bg-[#121212]">
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-doge/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="w-full max-w-md bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-xl border border-gray-200 dark:border-[#333] p-8 relative z-10">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-doge rounded-full flex items-center justify-center text-3xl font-bold text-black mx-auto mb-4 shadow-lg doge-font">Ð</div>
+                <h1 class="text-2xl font-bold doge-font mb-2">MuchBalance Wallet</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">Enter your Dogecoin address to view your balance and transactions.</p>
+            </div>
+
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="wallet-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Wallet Address</label>
+                    <input type="text" id="wallet-input" placeholder="e.g. D8AXXiGEZeZnMK..." class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-[#242424] border border-gray-200 dark:border-[#333] focus:border-doge focus:ring-2 focus:ring-doge/20 outline-none transition-all dark:text-white font-mono text-sm" required>
+                </div>
+                <button type="submit" class="w-full bg-doge hover:bg-doge-light text-black font-bold py-3 px-4 rounded-xl transition-transform active:scale-95 shadow-lg shadow-doge/20 flex items-center justify-center gap-2">
+                    <span>View Wallet</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-gray-100 dark:border-[#333] text-center">
+                <button id="use-demo-btn" class="text-xs text-gray-500 hover:text-doge transition-colors underline">Use Demo Address</button>
+            </div>
+        </div>
+        
+        <!-- Theme Toggle Login -->
+        <button id="theme-toggle-login" class="mt-8 p-2 rounded-full bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#333] text-gray-500 dark:text-gray-400 hover:text-doge transition-colors">
+            <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+            <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+        </button>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboard-view" class="flex h-screen overflow-hidden hidden-view opacity-0">
+        <!-- Sidebar (Desktop) -->
+        <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-[#1a1a1a] border-r border-gray-200 dark:border-[#333333]">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-doge flex items-center justify-center text-black font-bold text-xl doge-font shadow-md">
+                    Ð
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white doge-font">MuchBalance</h1>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 bg-doge/10 text-doge-dark dark:text-doge rounded-xl font-medium">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#market-section" class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white rounded-xl">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    <span>Markets</span>
+                </a>
+                <a href="#" id="explorer-link" target="_blank" class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white rounded-xl">
+                    <i data-lucide="external-link" class="w-5 h-5"></i>
+                    <span>Explorer</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-gray-200 dark:border-[#333333]">
+                <button id="change-wallet-btn" class="w-full flex items-center justify-center gap-2 px-4 py-2 mb-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg border border-transparent hover:border-red-100 dark:hover:border-red-900/20">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    Change Wallet
+                </button>
+
+                <!-- Theme Toggle in Sidebar -->
+                <button id="theme-toggle-desktop" class="w-full flex items-center justify-between px-4 py-3 mb-4 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-black/20 hover:bg-gray-200 dark:hover:bg-white/5 rounded-xl">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                        <span class="dark:hidden">Dark Mode</span>
+                        <span class="hidden dark:inline">Light Mode</span>
+                    </span>
+                </button>
+
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-doge to-yellow-200 shadow-sm flex items-center justify-center text-xs font-bold text-doge-dark bg-white">
+                        MB
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">Wallet User</p>
+                        <p class="text-xs text-gray-500">MuchBalance</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            
+            <!-- Mobile Header -->
+            <header class="md:hidden flex items-center justify-between p-4 bg-white dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-[#333333] z-20">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-doge flex items-center justify-center text-black font-bold shadow-sm">Ð</div>
+                    <span class="font-bold text-lg doge-font text-gray-900 dark:text-white">MuchBalance</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="theme-toggle-mobile" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg">
+                        <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
+                        <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8 space-y-6 md:space-y-8 scroll-smooth bg-gray-50 dark:bg-[#121212]">
+                
+                <!-- Top Stats Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Balance Card -->
+                    <div class="lg:col-span-2 bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#333333] rounded-2xl p-6 relative overflow-hidden group shadow-sm dark:shadow-none">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-doge/10 dark:bg-doge/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                        
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="relative z-10">
+                                <p class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">Total Balance</p>
+                                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white tracking-tight flex items-baseline gap-2">
+                                    <span id="balance-doge">Loading...</span> 
+                                    <span class="text-xl md:text-2xl text-doge font-normal">DOGE</span>
+                                </h2>
+                                <p class="text-gray-500 mt-2 flex items-center gap-2">
+                                    ≈ <span id="balance-usd" class="text-gray-700 dark:text-gray-300 font-medium">$0.00</span> USD
+                                </p>
+                            </div>
+                            <div class="hidden sm:block p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10 shadow-sm dark:shadow-none">
+                                <img src="https://cryptologos.cc/logos/dogecoin-doge-logo.svg?v=024" alt="Doge Logo" class="w-12 h-12">
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4 mt-8 relative z-10">
+                            <button onclick="copyAddress()" class="flex-1 bg-doge hover:bg-doge-light text-black font-semibold py-3 px-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-doge/20">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <span id="copy-text">Copy Address</span>
+                            </button>
+                            <a id="explorer-btn" href="#" target="_blank" class="flex-1 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-gray-900 dark:text-white font-medium py-3 px-4 rounded-xl transition-all border border-gray-200 dark:border-white/10 flex items-center justify-center gap-2">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                                View on Explorer
+                            </a>
+                        </div>
+
+                        <div class="mt-6 p-3 bg-gray-100 dark:bg-black/20 rounded-lg border border-gray-200 dark:border-white/5 flex items-center justify-between text-xs md:text-sm text-gray-500 dark:text-gray-400 font-mono break-all relative z-10">
+                            <span id="wallet-address-display">...</span>
+                            <i data-lucide="check-circle" class="w-4 h-4 text-doge ml-2 flex-shrink-0 hidden" id="copy-success-icon"></i>
+                        </div>
+                    </div>
+
+                    <!-- Price Card & QR -->
+                    <div class="space-y-6">
+                        <!-- Live Price -->
+                        <div class="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#333333] rounded-2xl p-6 shadow-sm dark:shadow-none">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">Dogecoin Price</h3>
+                                <span class="flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                            </div>
+                            <div class="flex items-baseline gap-3">
+                                <span id="price-usd" class="text-3xl font-bold text-gray-900 dark:text-white">$0.00</span>
+                                <span id="price-change" class="text-sm font-medium px-2 py-0.5 rounded bg-gray-100 dark:bg-green-500/10 text-green-600 dark:text-green-500">0.00%</span>
+                            </div>
+                            <div class="mt-4 h-16 w-full">
+                                    <!-- Mini sparkline canvas -->
+                                    <canvas id="sparklineChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- QR Code -->
+                        <div class="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#333333] rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-sm dark:shadow-none">
+                            <img id="qr-code" src="" alt="Wallet QR" class="w-32 h-32 rounded-lg bg-gray-50 p-2 mb-3 border border-gray-200">
+                            <p class="text-xs text-gray-500">Scan to deposit DOGE</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Chart Section -->
+                <div id="market-section" class="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#333333] rounded-2xl p-6 shadow-sm dark:shadow-none">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Market Overview (7 Days)</h3>
+                        <select class="bg-gray-100 dark:bg-black/20 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-gray-300 text-sm rounded-lg px-3 py-1 focus:outline-none focus:border-doge">
+                            <option>USD</option>
+                        </select>
+                    </div>
+                    <div class="relative h-64 md:h-80 w-full">
+                        <canvas id="marketChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Transactions Section -->
+                <div class="bg-white dark:bg-[#242424] border border-gray-200 dark:border-[#333333] rounded-2xl overflow-hidden shadow-sm dark:shadow-none">
+                    <div class="p-6 border-b border-gray-200 dark:border-[#333333] flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
+                        <button onclick="refreshData()" class="p-2 bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" title="Refresh Data">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                            <thead class="bg-gray-50 dark:bg-black/20 text-xs uppercase font-medium text-gray-500 dark:text-gray-500 border-b border-gray-200 dark:border-[#333333]">
+                                <tr>
+                                    <th class="px-6 py-4">Type</th>
+                                    <th class="px-6 py-4">Transaction Hash</th>
+                                    <th class="px-6 py-4">Date</th>
+                                    <th class="px-6 py-4 text-right">Amount (DOGE)</th>
+                                    <th class="px-6 py-4 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tx-list" class="divide-y divide-gray-200 dark:divide-white/5">
+                                <!-- Loading State -->
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center">
+                                        <div class="flex justify-center items-center gap-2">
+                                            <div class="w-4 h-4 border-2 border-doge border-t-transparent rounded-full animate-spin"></div>
+                                            <span>Loading blockchain data...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 border-t border-gray-200 dark:border-white/5 text-center">
+                        <a id="explorer-btn-footer" href="#" target="_blank" class="text-xs text-doge hover:text-doge-dark transition-colors">View all transactions on Blockchain Explorer &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="flex justify-between items-center text-xs text-gray-500 dark:text-gray-600 pt-8 pb-4">
+                    <p>&copy; 2025 MuchBalance Wallet. Built with ❤️.</p>
+                    <p>Data provided by BlockCypher & CoinGecko</p>
+                </footer>
+
+            </div>
+        </main>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="fixed inset-0 bg-black/50 dark:bg-black/80 backdrop-blur-sm z-50 hidden transition-opacity opacity-0">
+            <div class="absolute right-0 top-0 h-full w-64 bg-white dark:bg-[#242424] border-l border-gray-200 dark:border-[#333333] p-6 shadow-2xl transform translate-x-full transition-transform duration-300" id="mobile-menu-panel">
+                <div class="flex justify-between items-center mb-8">
+                    <span class="text-xl font-bold text-gray-900 dark:text-white doge-font">Menu</span>
+                    <button id="close-menu-btn" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <nav class="space-y-4">
+                    <a href="#" class="block px-4 py-3 bg-doge/10 text-doge-dark dark:text-doge rounded-xl font-medium">Dashboard</a>
+                    <a href="#market-section" class="block px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors" onclick="toggleMenu(false)">Markets</a>
+                    <a id="mobile-explorer-link" href="#" target="_blank" class="block px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors">Explorer</a>
+                    <div class="border-t border-gray-200 dark:border-[#333] pt-4 mt-4">
+                        <button onclick="logout()" class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-colors">Change Wallet</button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & Config ---
+        const DEMO_ADDRESS = 'D8AXXiGEZeZnMKTKnC9AWB3YUU4jfMAmYU';
+        let currentAddress = localStorage.getItem('muchbalance_address') || null;
+        
+        let dogePrice = 0;
+        let cachedChartData = null;
+
+        // --- Theme Logic ---
+        const themeToggles = [
+            document.getElementById('theme-toggle-desktop'),
+            document.getElementById('theme-toggle-mobile'),
+            document.getElementById('theme-toggle-login')
+        ];
+
+        // 1. Load theme immediately on parse to avoid flash
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('muchbalance_theme');
+            const isDark = savedTheme === 'dark'; // Default is light
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        
+        function toggleTheme() {
+            // Add transition class specifically for the toggle action
+            document.documentElement.classList.add('switching-theme');
+            
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('muchbalance_theme', isDark ? 'dark' : 'light');
+            
+            // Re-render charts with new theme colors if data exists
+            if (cachedChartData && document.getElementById('dashboard-view').style.display !== 'none') {
+                renderMainChart(cachedChartData);
+            }
+
+            // Remove transition class after animation ends to prevent heavy reflows on resize
+            setTimeout(() => {
+                document.documentElement.classList.remove('switching-theme');
+            }, 550);
+        }
+
+        themeToggles.forEach(btn => btn?.addEventListener('click', toggleTheme));
+
+        // --- Auth / Navigation Logic ---
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const walletInput = document.getElementById('wallet-input');
+
+        function initApp() {
+            loadSavedTheme(); // Ensure theme is applied
+
+            if (currentAddress) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        function showLogin() {
+            loginView.style.display = 'flex';
+            dashboardView.classList.add('hidden-view');
+            dashboardView.classList.remove('flex');
+            dashboardView.style.opacity = '0';
+            document.title = "Login | MuchBalance Wallet";
+        }
+
+        function showDashboard() {
+            loginView.style.display = 'none';
+            dashboardView.classList.remove('hidden-view');
+            dashboardView.classList.add('flex');
+            // Small delay for opacity fade-in
+            setTimeout(() => {
+                dashboardView.style.opacity = '1';
+                lucide.createIcons(); // Ensure icons render when view becomes visible
+            }, 50);
+            
+            document.title = "Dashboard | MuchBalance Wallet";
+            
+            // Update UI with address
+            document.getElementById('wallet-address-display').innerText = currentAddress;
+            
+            // Update Explorer Links
+            const explorerUrl = `https://dogechain.info/address/${currentAddress}`;
+            document.getElementById('explorer-link').href = explorerUrl;
+            document.getElementById('explorer-btn').href = explorerUrl;
+            document.getElementById('explorer-btn-footer').href = explorerUrl;
+            document.getElementById('mobile-explorer-link').href = explorerUrl;
+
+            // Generate QR
+            document.getElementById('qr-code').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${currentAddress}`;
+
+            // Fetch Data
+            refreshData();
+        }
+
+        function setAddress(address) {
+            if(!address || address.length < 10) {
+                alert("Please enter a valid address");
+                return;
+            }
+            currentAddress = address.trim();
+            localStorage.setItem('muchbalance_address', currentAddress);
+            showDashboard();
+        }
+
+        function logout() {
+            localStorage.removeItem('muchbalance_address');
+            currentAddress = null;
+            // Clear sensitive data from UI
+            document.getElementById('balance-doge').innerText = 'Loading...';
+            document.getElementById('balance-usd').innerText = '$0.00';
+            document.getElementById('tx-list').innerHTML = '';
+            showLogin();
+        }
+
+        // Event Listeners for Auth
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            setAddress(walletInput.value);
+        });
+
+        document.getElementById('use-demo-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            setAddress(DEMO_ADDRESS);
+        });
+
+        document.getElementById('change-wallet-btn').addEventListener('click', logout);
+
+
+        // --- UI Interactions ---
+        lucide.createIcons();
+
+        // Mobile Menu Logic
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+
+        function toggleMenu(show) {
+            if (show) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0');
+                    mobileMenuPanel.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                mobileMenu.classList.add('opacity-0');
+                mobileMenuPanel.classList.add('translate-x-full');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        mobileMenuBtn?.addEventListener('click', () => toggleMenu(true));
+        closeMenuBtn?.addEventListener('click', () => toggleMenu(false));
+        mobileMenu?.addEventListener('click', (e) => {
+            if (e.target === mobileMenu) toggleMenu(false);
+        });
+
+        // Copy Address
+        window.copyAddress = function() {
+            if(!currentAddress) return;
+            navigator.clipboard.writeText(currentAddress).then(() => {
+                const btn = document.getElementById('copy-text');
+                const originalText = btn.innerText;
+                btn.innerText = 'Copied!';
+                document.getElementById('copy-success-icon').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    document.getElementById('copy-success-icon').classList.add('hidden');
+                }, 2000);
+            });
+        }
+
+        // --- Data Fetching ---
+
+        window.refreshData = function() {
+            fetchMarketData();
+            fetchWalletData();
+        }
+
+        async function fetchMarketData() {
+            try {
+                // Fetch Price
+                const priceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=dogecoin&vs_currencies=usd&include_24hr_change=true');
+                const priceData = await priceRes.json();
+                
+                dogePrice = priceData.dogecoin.usd;
+                const change = priceData.dogecoin.usd_24h_change;
+
+                // Update Price UI
+                document.getElementById('price-usd').innerText = `$${dogePrice.toFixed(4)}`;
+                const changeEl = document.getElementById('price-change');
+                changeEl.innerText = `${change > 0 ? '+' : ''}${change.toFixed(2)}%`;
+                
+                if (change >= 0) {
+                    changeEl.className = 'text-sm font-medium px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-500';
+                } else {
+                    changeEl.className = 'text-sm font-medium px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-500';
+                }
+
+                // Fetch Chart Data
+                const chartRes = await fetch('https://api.coingecko.com/api/v3/coins/dogecoin/market_chart?vs_currency=usd&days=7');
+                const chartData = await chartRes.json();
+                cachedChartData = chartData.prices;
+                renderMainChart(chartData.prices);
+                renderSparkline(chartData.prices);
+
+                // Update balance USD if balance is already loaded
+                const balanceEl = document.getElementById('balance-doge');
+                if (balanceEl.innerText !== 'Loading...' && balanceEl.innerText !== 'Error') {
+                    const balance = parseFloat(balanceEl.innerText.replace(/,/g, ''));
+                    document.getElementById('balance-usd').innerText = (balance * dogePrice).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                }
+
+            } catch (error) {
+                console.error('Error fetching market data:', error);
+            }
+        }
+
+        async function fetchWalletData() {
+            if (!currentAddress) return;
+            
+            const txList = document.getElementById('tx-list');
+            txList.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center"><div class="flex justify-center items-center gap-2"><div class="w-4 h-4 border-2 border-doge border-t-transparent rounded-full animate-spin"></div><span>Updating...</span></div></td></tr>`;
+
+            const apiUrl = `https://api.blockcypher.com/v1/doge/main/addrs/${currentAddress}?limit=10`;
+
+            try {
+                const res = await fetch(apiUrl);
+                if (!res.ok) {
+                    if (res.status === 429) throw new Error('Rate limit exceeded. Please wait a moment.');
+                    if (res.status === 404) throw new Error('Address not found on blockchain.');
+                    throw new Error('API Error');
+                }
+                const data = await res.json();
+
+                // Update Balance
+                const balanceDoge = data.final_balance / 100000000;
+                document.getElementById('balance-doge').innerText = balanceDoge.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                
+                // Calculate USD Value
+                if (dogePrice > 0) {
+                    document.getElementById('balance-usd').innerText = (balanceDoge * dogePrice).toLocaleString('en-US', {style: 'currency', currency: 'USD'});
+                }
+
+                // Process Transactions
+                renderTransactions(data.txrefs || []);
+
+            } catch (error) {
+                console.error('Error fetching wallet data:', error);
+                document.getElementById('balance-doge').innerText = 'Error';
+                txList.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-red-500 dark:text-red-400">Failed to load data: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderTransactions(txs) {
+            const tbody = document.getElementById('tx-list');
+            tbody.innerHTML = '';
+
+            if (txs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center">No recent transactions found.</td></tr>';
+                return;
+            }
+
+            txs.forEach(tx => {
+                const isReceived = tx.tx_input_n === -1; 
+                const amount = tx.value / 100000000;
+                const date = new Date(tx.confirmed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group';
+                
+                const iconBg = isReceived 
+                    ? 'bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-500' 
+                    : 'bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-500';
+                
+                const textColor = isReceived 
+                    ? 'text-green-600 dark:text-green-400' 
+                    : 'text-red-600 dark:text-red-400';
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <div class="p-2 rounded-lg ${iconBg}">
+                                <i data-lucide="${isReceived ? 'arrow-down-left' : 'arrow-up-right'}" class="w-4 h-4"></i>
+                            </div>
+                            <span class="font-medium ${textColor}">${isReceived ? 'Received' : 'Sent'}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 font-mono text-xs text-gray-500 dark:text-gray-500">
+                        <a href="https://dogechain.info/tx/${tx.tx_hash}" target="_blank" class="hover:text-doge-dark dark:hover:text-doge hover:underline truncate w-32 block">
+                            ${tx.tx_hash.substring(0, 8)}...${tx.tx_hash.substring(tx.tx_hash.length - 8)}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500 dark:text-gray-400">${date}</td>
+                    <td class="px-6 py-4 text-right font-medium text-gray-900 dark:text-white">
+                        ${isReceived ? '+' : '-'}${amount.toLocaleString()} DOGE
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-500/20">
+                            Confirmed
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // --- Charting ---
+        let mainChartInstance = null;
+        let sparklineInstance = null;
+
+        function getChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+                grid: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                text: isDark ? '#999' : '#666',
+                tooltipBg: isDark ? '#242424' : '#ffffff',
+                tooltipText: isDark ? '#fff' : '#000',
+                tooltipBorder: isDark ? '#333' : '#e2e8f0'
+            };
+        }
+
+        function renderMainChart(prices) {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            const labels = prices.map(p => new Date(p[0]).toLocaleDateString());
+            const data = prices.map(p => p[1]);
+            const colors = getChartColors();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(203, 152, 0, 0.5)'); 
+            gradient.addColorStop(1, 'rgba(203, 152, 0, 0.0)');
+
+            if (mainChartInstance) mainChartInstance.destroy();
+
+            mainChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Price (USD)',
+                        data: data,
+                        borderColor: '#CB9800',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: colors.tooltipBg,
+                            titleColor: '#CB9800',
+                            bodyColor: colors.tooltipText,
+                            borderColor: colors.tooltipBorder,
+                            borderWidth: 1,
+                            padding: 10,
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 13 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: colors.text, maxTicksLimit: 7 }
+                        },
+                        y: {
+                            grid: { color: colors.grid, borderDash: [5, 5] },
+                            ticks: { color: colors.text, callback: (value) => '$' + value.toFixed(3) }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        function renderSparkline(prices) {
+            const ctx = document.getElementById('sparklineChart').getContext('2d');
+            const data = prices.map(p => p[1]);
+            
+            if (sparklineInstance) sparklineInstance.destroy();
+
+            sparklineInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: prices.map(p => p[0]), 
+                    datasets: [{
+                        data: data,
+                        borderColor: data[data.length-1] >= data[0] ? '#22c55e' : '#ef4444',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        // --- Init ---
+        window.addEventListener('load', () => {
+            loadSavedTheme(); // Load theme ASAP
+            lucide.createIcons();
+            initApp();
+        });
+
+    </script>
+</body>
+</html>
